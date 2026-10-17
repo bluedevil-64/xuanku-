@@ -69,18 +69,18 @@ async function logout() {
         </router-link>
 
         <nav class="links">
-          <router-link to="/shop" class="link" :class="{ on: route.path === '/shop' }">商品</router-link>
+          <router-link to="/shop" class="link" :class="{ on: route.path === '/shop' }">Products</router-link>
           <router-link to="/shop/orders" class="link" :class="{ on: route.path === '/shop/orders' }">
-            订单
+            Orders
           </router-link>
           <router-link to="/shop/cart" class="link" :class="{ on: route.path === '/shop/cart' }">
-            购物车
+            Cart
             <span v-if="cart.count" :key="cart.count" class="badge">{{ cart.count }}</span>
           </router-link>
         </nav>
 
         <div class="acts">
-          <router-link to="/shop/cart" class="cart-mini" aria-label="购物车">
+          <router-link to="/shop/cart" class="cart-mini" aria-label="Cart">
             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7">
               <path d="M4 7h16l-1.4 9.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8L4 7Z" stroke-linejoin="round" />
               <path d="M9 7a3 3 0 0 1 6 0" stroke-linecap="round" />
@@ -89,15 +89,15 @@ async function logout() {
           </router-link>
           <button class="ghost-btn" @click="chatOpen = true">
             <span class="spark"></span>
-            AI 导购
+            AI Concierge
           </button>
           <template v-if="store.isLogin">
             <router-link to="/shop/account" class="who" :class="{ on: route.path === '/shop/account' }">
               {{ store.user?.nickname || store.user?.username }}
             </router-link>
-            <button class="out" @click="logout">退出</button>
+            <button class="out" @click="logout">Sign out</button>
           </template>
-          <router-link v-else to="/shop/login" class="signin">登录</router-link>
+          <router-link v-else to="/shop/login" class="signin">Sign in</router-link>
         </div>
       </div>
     </header>
@@ -116,11 +116,11 @@ async function logout() {
           </span>
           <span>XUANKU</span>
         </div>
-        <p class="tagline">一个纯前端的高规格电商视觉实验。</p>
+        <p class="tagline">A front-end-only e-commerce visual experiment.</p>
         <div class="foot-meta">
           <span>© 2026 XUANKU</span>
           <span class="dot"></span>
-          <span>Vue 3 · Vite · 静态托管</span>
+          <span>Vue 3 · Vite · Static hosting</span>
         </div>
       </div>
     </footer>

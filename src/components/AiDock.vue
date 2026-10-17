@@ -13,14 +13,14 @@ const emit = defineEmits(['update:open'])
 const msgs = ref([
   {
     role: 'ai',
-    text: '你好，我是这里的导购助手。想找什么？告诉我预算、用途或者使用场景，我来挑。',
+    text: "Hi — I'm the concierge. What are you looking for? Give me a budget, a use case or a vibe, and I'll narrow it down.",
   },
 ])
 const input = ref('')
 const typing = ref(false)
 const bodyRef = ref(null)
 
-const QUICK = ['三千以内买什么', '推荐降噪耳机', '客厅用什么沙发', '有什么新品']
+const QUICK = ['Best under ¥3,000', 'Recommend ANC headphones', 'A sofa for my living room', "What's new"]
 
 let timer = null
 let catalog = []
@@ -43,7 +43,7 @@ function pick(list, n = 3) {
 /** 本地意图匹配：预算 / 类别 / 推荐 / 寒暄 */
 async function compose(q) {
   const list = await ensureCatalog()
-  if (!list.length) return '商品数据还没加载好，稍等一下再问我一次。'
+  if (!list.length) return 'Product data has not loaded yet — ask me again in a second.'
 
   const num = q.match(/(\d{2,6})/)
   const budget = num ? Number(num[1]) : 0
@@ -54,47 +54,47 @@ async function compose(q) {
   if (hit.length) {
     const p = hit[0]
     return [
-      `${p.name}，¥${money(p.price)}。`,
+      `${p.name} — ¥${money(p.price)}.`,
       p.subtitle || '',
-      p.description ? `${p.description.slice(0, 60)}…` : '',
-      '要不要我把它加进购物车？',
+      p.description ? `${p.description.slice(0, 90)}…` : '',
+      'Want me to add it to the cart?',
     ]
       .filter(Boolean)
       .join('\n')
   }
 
-  if (/降噪|耳机|听歌/.test(q)) {
-    const hs = list.filter((p) => /耳机|音箱|音频/.test(`${p.name}${p.category}`))
-    if (hs.length) return `这几件是听感向的：\n${pick(hs, 3)}\n自用我倾向第一件，通勤优先看续航。`
+  if (/降噪|耳机|听歌|headphone|anc|audio|music/i.test(q)) {
+    const hs = list.filter((p) => /耳机|音箱|音频|headphone|earbuds|speaker|audio/i.test(`${p.name}${p.category}`))
+    if (hs.length) return `Here is the audio lineup:\n${pick(hs, 3)}\nFor daily listening I'd take the first one; commuting, check battery life first.`
   }
 
-  if (/沙发|客厅|家具|椅/.test(q)) {
-    const fs = list.filter((p) => /沙发|家具|椅|桌/.test(`${p.name}${p.category}`))
-    if (fs.length) return `客厅方向可以看这些：\n${pick(fs, 3)}\n小户型选窄扶手，坐深 90cm 左右最稳。`
+  if (/沙发|客厅|家具|椅|sofa|couch|chair|living/i.test(q)) {
+    const fs = list.filter((p) => /沙发|家具|椅|桌|sofa|couch|chair|table|furniture/i.test(`${p.name}${p.category}`))
+    if (fs.length) return `For the living room, look at these:\n${pick(fs, 3)}\nSmall spaces: narrow arms and a ~90cm seat depth are safest.`
   }
 
   if (budget) {
     const fits = list.filter((p) => Number(p.price) <= budget).sort((a, b) => b.sales - a.sales)
     if (fits.length) {
-      return `${budget} 以内，按口碑排前三：\n${pick(fits, 3)}\n这个预算不必追参数，挑销量高的那款最省心。`
+      return `Under ${budget}, top three by reputation:\n${pick(fits, 3)}\nAt this price skip spec-chasing and take the best-seller.`
     }
-    return `${budget} 以内暂时没有合适的，最便宜的也在 ¥${money(
+    return `Nothing fits under ${budget} yet — the cheapest starts around ¥${money(
       Math.min(...list.map((p) => Number(p.price))),
-    )} 左右。要不要看看分期或者二手？`
+    )}. Want installments or second-hand instead?`
   }
 
-  if (/新|上新|最近/.test(q)) {
+  if (/新|上新|最近|new|arrival|recent/i.test(q)) {
     const fresh = [...list].sort((a, b) => Number(b.id) - Number(a.id))
-    return `刚到的一批：\n${pick(fresh, 3)}\n新品通常价格硬，等两周再买更划算。`
+    return `Fresh arrivals:\n${pick(fresh, 3)}\nNew drops hold their price — wait two weeks for a discount.`
   }
 
-  if (/便宜|性价比|划算/.test(q)) {
+  if (/便宜|性价比|划算|cheap|value|deal/i.test(q)) {
     const cheap = [...list].sort((a, b) => Number(a.price) - Number(b.price))
-    return `预算优先的话：\n${pick(cheap, 3)}\n这三件是同价位里返修率最低的。`
+    return `Budget-first picks:\n${pick(cheap, 3)}\nThese three have the lowest return rates in their price band.`
   }
 
   const top = [...list].sort((a, b) => Number(b.sales || 0) - Number(a.sales || 0))
-  return `我按销量给你排了前三：\n${pick(top, 3)}\n想更准一点，告诉我预算或用途，比如「四千以内的办公椅」。`
+  return `Top three by sales:\n${pick(top, 3)}\nWant sharper picks? Tell me a budget or a use case — e.g. "an office chair under ¥4,000".`
 }
 
 async function scrollBottom() {
@@ -148,14 +148,14 @@ onBeforeUnmount(() => clearInterval(timer))
 <template>
   <div class="dock" :class="{ open }">
     <Transition name="panel">
-      <section v-if="open" class="panel" aria-label="AI 导购">
+      <section v-if="open" class="panel" aria-label="AI Concierge">
         <header class="panel-head">
           <span class="orb"></span>
           <div class="who">
-            <strong>AI 导购</strong>
-            <span>本地演示 · 无需联网</span>
+            <strong>AI Concierge</strong>
+            <span>Local demo · works offline</span>
           </div>
-          <button class="x" @click="close" aria-label="关闭">
+          <button class="x" @click="close" aria-label="Close">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
             </svg>
@@ -173,8 +173,8 @@ onBeforeUnmount(() => clearInterval(timer))
             <button v-for="c in QUICK" :key="c" class="chip" @click="ask(c)">{{ c }}</button>
           </div>
           <form class="composer" @submit.prevent="ask()">
-            <input v-model="input" placeholder="说说你的预算或用途…" :disabled="typing" />
-            <button type="submit" :disabled="typing || !input.trim()" aria-label="发送">
+            <input v-model="input" placeholder="Budget, use case, or a vibe…" :disabled="typing" />
+            <button type="submit" :disabled="typing || !input.trim()" aria-label="Send">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9">
                 <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
@@ -192,7 +192,7 @@ onBeforeUnmount(() => clearInterval(timer))
       <svg v-else viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9">
         <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
       </svg>
-      <span class="fab-text">AI 导购</span>
+      <span class="fab-text">AI Concierge</span>
     </button>
   </div>
 </template>

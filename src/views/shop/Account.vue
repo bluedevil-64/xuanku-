@@ -30,7 +30,7 @@ onMounted(async () => {
 async function saveNickname() {
   const name = nickname.value.trim()
   if (!name) {
-    ElMessage.warning('昵称不能为空')
+    ElMessage.warning('Nickname cannot be empty')
     return
   }
   if (name === user.value.nickname) return
@@ -39,7 +39,7 @@ async function saveNickname() {
     const updated = await authApi.updateProfile({ nickname: name })
     store.updateUser(updated)
     nickname.value = updated.nickname
-    ElMessage.success('昵称已更新')
+    ElMessage.success('Nickname updated')
   } catch {
     // 失败提示由请求拦截器统一弹出
   } finally {
@@ -49,15 +49,15 @@ async function saveNickname() {
 
 async function savePassword() {
   if (!pwd.old || !pwd.next) {
-    ElMessage.warning('请填写原密码和新密码')
+    ElMessage.warning('Please fill in both password fields')
     return
   }
   if (pwd.next.length < 6 || pwd.next.length > 32) {
-    ElMessage.warning('新密码长度需为 6-32 位')
+    ElMessage.warning('New password must be 6-32 characters')
     return
   }
   if (pwd.next !== pwd.confirm) {
-    ElMessage.warning('两次输入的新密码不一致')
+    ElMessage.warning('Passwords do not match')
     return
   }
   changing.value = true
@@ -66,7 +66,7 @@ async function savePassword() {
     pwd.old = ''
     pwd.next = ''
     pwd.confirm = ''
-    ElMessage.success('密码已修改')
+    ElMessage.success('Password changed')
   } catch {
     // 失败提示由请求拦截器统一弹出（如原密码不正确）
   } finally {
@@ -91,51 +91,51 @@ async function logout() {
       <div class="avatar">{{ initial }}</div>
       <div>
         <h1>{{ user.nickname || user.username }}</h1>
-        <p>@{{ user.username }} · 注册于 {{ user.createTime || '—' }}</p>
+        <p>@{{ user.username }} · joined {{ user.createTime || '—' }}</p>
       </div>
     </header>
 
     <section class="block">
-      <h2>资料</h2>
+      <h2>Profile</h2>
 
       <div class="field">
-        <label for="nickname">昵称</label>
-        <input id="nickname" v-model="nickname" maxlength="20" placeholder="最多 20 个字符" />
+        <label for="nickname">Nickname</label>
+        <input id="nickname" v-model="nickname" maxlength="20" placeholder="Max 20 characters" />
         <button
           class="save"
           :disabled="saving || !nickname.trim() || nickname.trim() === user.nickname"
           @click="saveNickname"
         >
-          {{ saving ? '保存中…' : '保存' }}
+          {{ saving ? 'Saving…' : 'Save' }}
         </button>
       </div>
 
       <div class="field readonly">
-        <label>用户名</label>
+        <label>Username</label>
         <span>{{ user.username }}</span>
-        <em>不可修改</em>
+        <em>Locked</em>
       </div>
     </section>
 
     <section class="block">
-      <h2>修改密码</h2>
+      <h2>Change password</h2>
 
       <div class="field">
-        <label for="pwd-old">原密码</label>
+        <label for="pwd-old">Current password</label>
         <input id="pwd-old" v-model="pwd.old" type="password" autocomplete="current-password" />
       </div>
       <div class="field">
-        <label for="pwd-new">新密码</label>
+        <label for="pwd-new">New password</label>
         <input
           id="pwd-new"
           v-model="pwd.next"
           type="password"
-          placeholder="6-32 位"
+          placeholder="6-32 characters"
           autocomplete="new-password"
         />
       </div>
       <div class="field">
-        <label for="pwd-confirm">确认新密码</label>
+        <label for="pwd-confirm">Confirm new password</label>
         <input
           id="pwd-confirm"
           v-model="pwd.confirm"
@@ -145,15 +145,15 @@ async function logout() {
       </div>
 
       <button class="primary" :disabled="changing" @click="savePassword">
-        {{ changing ? '提交中…' : '修改密码' }}
+        {{ changing ? 'Updating…' : 'Change password' }}
       </button>
     </section>
 
     <section class="block links">
-      <h2>快捷</h2>
-      <router-link to="/shop/orders">我的订单 →</router-link>
-      <router-link to="/shop/cart">购物车 →</router-link>
-      <button class="quiet" @click="logout">退出登录</button>
+      <h2>Quick links</h2>
+      <router-link to="/shop/orders">My orders →</router-link>
+      <router-link to="/shop/cart">Cart →</router-link>
+      <button class="quiet" @click="logout">Sign out</button>
     </section>
   </div>
 </template>

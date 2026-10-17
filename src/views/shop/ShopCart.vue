@@ -26,7 +26,7 @@ async function submit() {
     return
   }
   if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) {
-    ElMessage.warning('请填写完整的收货信息')
+    ElMessage.warning('Please fill in the shipping details')
     return
   }
   submitting.value = true
@@ -38,7 +38,7 @@ async function submit() {
       receiverAddress: form.address.trim(),
     })
     cart.clear()
-    ElMessage.success(`下单成功，订单号 ${order.orderNo}`)
+    ElMessage.success(`Order placed — ${order.orderNo}`)
     router.push('/shop/orders')
   } catch {
     // 库存不足等失败由请求拦截器提示
@@ -51,13 +51,13 @@ async function submit() {
 <template>
   <div class="page">
     <header class="head">
-      <h1>购物车</h1>
-      <p v-if="cart.items.length">共 {{ cart.count }} 件</p>
+      <h1>Cart</h1>
+      <p v-if="cart.items.length">{{ cart.count }} items</p>
     </header>
 
     <div v-if="!cart.items.length" class="empty">
-      <p>购物车还是空的</p>
-      <router-link to="/shop">去挑点什么 →</router-link>
+      <p>Your cart is empty</p>
+      <router-link to="/shop">Go pick something →</router-link>
     </div>
 
     <div v-else class="layout">
@@ -71,7 +71,7 @@ async function submit() {
           <div class="detail">
             <router-link :to="`/shop/p/${i.productId}`" class="name">{{ i.name }}</router-link>
             <p class="sub">{{ i.subtitle }}</p>
-            <p class="unit">单价 ¥{{ money(i.price) }}</p>
+            <p class="unit">Unit ¥{{ money(i.price) }}</p>
           </div>
 
           <div class="qty">
@@ -82,35 +82,35 @@ async function submit() {
 
           <div class="line-total">¥{{ money(Number(i.price) * i.quantity) }}</div>
 
-          <button class="del" @click="cart.remove(i.productId)">移除</button>
+          <button class="del" @click="cart.remove(i.productId)">Remove</button>
         </li>
       </ul>
 
       <aside class="summary">
         <div class="row">
-          <span>商品合计</span>
+          <span>Subtotal</span>
           <span>¥{{ money(total) }}</span>
         </div>
         <div class="row">
-          <span>运费</span>
-          <span class="free">免运费</span>
+          <span>Shipping</span>
+          <span class="free">Free</span>
         </div>
         <div class="row total">
-          <span>应付</span>
+          <span>Total</span>
           <span>¥{{ money(total) }}</span>
         </div>
 
         <div class="form">
-          <label>收货信息</label>
-          <input v-model="form.name" placeholder="收货人" />
-          <input v-model="form.phone" placeholder="手机号" />
-          <input v-model="form.address" placeholder="收货地址" />
+          <label>Shipping details</label>
+          <input v-model="form.name" placeholder="Name" />
+          <input v-model="form.phone" placeholder="Phone" />
+          <input v-model="form.address" placeholder="Address" />
         </div>
 
         <button class="submit" :disabled="submitting" @click="submit">
-          {{ submitting ? '提交中…' : store.isLogin ? '提交订单' : '登录后提交订单' }}
+          {{ submitting ? 'Placing…' : store.isLogin ? 'Place order' : 'Sign in to order' }}
         </button>
-        <p class="tip">纯静态展示站，下单不会产生真实订单</p>
+        <p class="tip">Static demo — no real orders are placed</p>
       </aside>
     </div>
   </div>

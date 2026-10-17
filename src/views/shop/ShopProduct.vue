@@ -57,7 +57,7 @@ function shapeOf(id) {
 function addToCart() {
   if (!product.value) return
   cart.add(product.value, qty.value)
-  ElMessage.success(`已加入购物车 · ${product.value.name} × ${qty.value}`)
+  ElMessage.success(`Added to cart · ${product.value.name} × ${qty.value}`)
 }
 
 function buyNow() {
@@ -89,14 +89,14 @@ function magnetLeave(e) {
       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M19 12H6M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      全部物件
+      All objects
     </router-link>
 
     <div v-if="loading" class="skeleton"></div>
 
     <div v-else-if="!product" class="missing">
-      <p>这件东西不在了</p>
-      <router-link to="/shop">看看其他物件 →</router-link>
+      <p>This item is gone</p>
+      <router-link to="/shop">Browse other objects →</router-link>
     </div>
 
     <div v-else class="layout">
@@ -109,9 +109,9 @@ function magnetLeave(e) {
           <span class="gloss" aria-hidden="true"></span>
         </div>
         <ul class="promise">
-          <li><span class="dot"></span>顺丰 24h 发出</li>
-          <li><span class="dot"></span>7 天无理由</li>
-          <li><span class="dot"></span>一年质保</li>
+          <li><span class="dot"></span>Ships in 24h via SF Express</li>
+          <li><span class="dot"></span>7-day returns</li>
+          <li><span class="dot"></span>1-year warranty</li>
         </ul>
       </div>
 
@@ -125,16 +125,16 @@ function magnetLeave(e) {
           <span class="star">★</span>
           <strong>{{ product.rating }}</strong>
           <span class="sep"></span>
-          <span>已售 {{ product.sales }}</span>
+          <span>{{ product.sales }} sold</span>
           <span class="sep"></span>
-          <span>库存 {{ product.stock }}</span>
+          <span>{{ product.stock }} in stock</span>
         </div>
 
         <div class="price">
           <span class="now">¥{{ money(product.price) }}</span>
           <s v-if="product.originalPrice" class="was">¥{{ money(product.originalPrice) }}</s>
           <span v-if="product.originalPrice" class="save">
-            省 ¥{{ money(product.originalPrice - product.price) }}
+            Save ¥{{ money(product.originalPrice - product.price) }}
           </span>
         </div>
 
@@ -152,14 +152,14 @@ function magnetLeave(e) {
             </button>
           </div>
           <button class="add magnet" @mousemove="magnetMove" @mouseleave="magnetLeave" @click="addToCart">
-            加入购物车
+            Add to cart
           </button>
-          <button class="now-buy" @click="buyNow">立即购买</button>
+          <button class="now-buy" @click="buyNow">Buy now</button>
         </div>
 
         <button class="ask" @click="openChat">
           <span class="spark"></span>
-          问 AI 导购：这件适合我吗？
+          Ask the concierge: is this right for me?
         </button>
 
         <dl class="specs">

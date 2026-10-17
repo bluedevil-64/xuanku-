@@ -22,14 +22,14 @@ function next() {
 
 async function doLogin() {
   if (!loginForm.username || !loginForm.password) {
-    ElMessage.warning('请输入账号和密码')
+    ElMessage.warning('Please enter a username and password')
     return
   }
   loading.value = true
   try {
     const data = await authApi.login(loginForm)
     store.setAuth(data.token, data.user)
-    ElMessage.success('登录成功')
+    ElMessage.success('Signed in')
     next()
   } finally {
     loading.value = false
@@ -38,14 +38,14 @@ async function doLogin() {
 
 async function doRegister() {
   if (!regForm.username || !regForm.password) {
-    ElMessage.warning('请输入账号和密码')
+    ElMessage.warning('Please enter a username and password')
     return
   }
   loading.value = true
   try {
     const data = await authApi.register(regForm)
     store.setAuth(data.token, data.user)
-    ElMessage.success('注册成功，欢迎')
+    ElMessage.success('Account created — welcome')
     next()
   } finally {
     loading.value = false
@@ -61,44 +61,44 @@ async function doRegister() {
         <span>XUANKU</span>
       </router-link>
 
-      <h1>欢迎回来</h1>
-      <p class="lede">这里是一个纯静态的视觉展示站，账号体系需要后端支持。</p>
+      <h1>Welcome back</h1>
+      <p class="lede">A static visual showcase — the account system needs a backend to work.</p>
 
       <div class="tabs">
-        <button :class="{ on: tab === 'login' }" @click="tab = 'login'">登录</button>
-        <button :class="{ on: tab === 'register' }" @click="tab = 'register'">注册</button>
+        <button :class="{ on: tab === 'login' }" @click="tab = 'login'">Sign in</button>
+        <button :class="{ on: tab === 'register' }" @click="tab = 'register'">Sign up</button>
       </div>
 
       <form v-if="tab === 'login'" @submit.prevent="doLogin">
-        <input v-model.trim="loginForm.username" placeholder="用户名" autocomplete="username" />
+        <input v-model.trim="loginForm.username" placeholder="Username" autocomplete="username" />
         <input
           v-model="loginForm.password"
           type="password"
-          placeholder="密码"
+          placeholder="Password"
           autocomplete="current-password"
           @keyup.enter="doLogin"
         />
         <button class="submit" type="submit" :disabled="loading">
-          {{ loading ? '登录中…' : '登录' }}
+          {{ loading ? 'Signing in…' : 'Sign in' }}
         </button>
       </form>
 
       <form v-else @submit.prevent="doRegister">
-        <input v-model.trim="regForm.username" placeholder="用户名（3-32 位）" />
-        <input v-model.trim="regForm.nickname" placeholder="昵称（选填）" />
+        <input v-model.trim="regForm.username" placeholder="Username (3-32 chars)" />
+        <input v-model.trim="regForm.nickname" placeholder="Nickname (optional)" />
         <input
           v-model="regForm.password"
           type="password"
-          placeholder="密码（6-32 位）"
+          placeholder="Password (6-32 chars)"
           autocomplete="new-password"
           @keyup.enter="doRegister"
         />
         <button class="submit" type="submit" :disabled="loading">
-          {{ loading ? '注册中…' : '注册并登录' }}
+          {{ loading ? 'Creating account…' : 'Sign up & sign in' }}
         </button>
       </form>
 
-      <p class="foot">继续即表示同意服务条款与隐私政策</p>
+      <p class="foot">By continuing you agree to the Terms of Service and Privacy Policy</p>
     </div>
   </div>
 </template>

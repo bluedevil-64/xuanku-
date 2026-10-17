@@ -60,5 +60,5 @@ export async function demoCategories() {
 
 /** 静态态下任何「需要写库」的操作都直接失败，由调用方给出提示 */
 export function staticBlocked() {
-  return new Error('这是静态展示站，下单/登录等功能需要后端支持')
+  return new Error('This is a static demo — orders and sign-in need a backend')
 }

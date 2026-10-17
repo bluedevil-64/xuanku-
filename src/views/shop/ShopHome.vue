@@ -20,7 +20,7 @@ const scrollY = ref(0)
 let raf = 0
 
 /** 逐字标题：第一行拆成单字错峰入场；第二行是渐变文字，只能整行动画 */
-const TITLE_L1 = '把好设计'
+const TITLE_L1 = 'Good design,'
 
 /** 数据条数字滚动 */
 const shown = reactive({ products: 0, cats: 0, hours: 0 })
@@ -42,10 +42,10 @@ function animateCount(key, target, dur = 1000) {
 }
 
 const SORTS = [
-  { key: 'default', label: '综合' },
-  { key: 'new', label: '最新' },
-  { key: 'price_asc', label: '价格 ↑' },
-  { key: 'price_desc', label: '价格 ↓' },
+  { key: 'default', label: 'Default' },
+  { key: 'new', label: 'Newest' },
+  { key: 'price_asc', label: 'Price ↑' },
+  { key: 'price_desc', label: 'Price ↓' },
 ]
 
 const totalCount = computed(() => cats.value.reduce((n, c) => n + Number(c.count || 0), 0))
@@ -203,15 +203,15 @@ const heroStyle = computed(() => {
               :key="`a${i}`"
               class="ch"
               :style="{ '--d': `${0.12 + i * 0.055}s` }"
-              >{{ ch }}</span
+              >{{ ch === ' ' ? '\u00A0' : ch }}</span
             >
           </span>
-          <span class="line grad-text ch-line" :style="{ '--d': '0.4s' }">带回家里</span>
+          <span class="line grad-text ch-line" :style="{ '--d': '0.4s' }">comes home.</span>
         </h1>
 
         <p class="lede hero-in">
-          十二件被反复挑选的物件，参数和场景都写清楚了。<br />
-          挑不准，右下角的窗口替你拿主意。
+          Twelve carefully chosen objects — every spec and use case spelled out.<br />
+          When in doubt, the window at the bottom right decides for you.
         </p>
 
         <div class="cta hero-in">
@@ -226,7 +226,7 @@ const heroStyle = computed(() => {
               <span class="beam b2"></span>
             </span>
             <span class="core">
-              <span class="label">开始选购</span>
+              <span class="label">Start browsing</span>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
@@ -234,24 +234,24 @@ const heroStyle = computed(() => {
           </a>
           <button class="ghost" @click="openChat">
             <span class="spark"></span>
-            问问 AI 导购
+            Ask the AI concierge
           </button>
         </div>
 
         <dl class="stats hero-in">
           <div>
             <dt>{{ shown.products }}</dt>
-            <dd>件在售</dd>
+            <dd>in catalog</dd>
           </div>
           <span class="rule"></span>
           <div>
             <dt>{{ shown.cats }}</dt>
-            <dd>个品类</dd>
+            <dd>categories</dd>
           </div>
           <span class="rule"></span>
           <div>
             <dt>{{ shown.hours }}h</dt>
-            <dd>顺丰发出</dd>
+            <dd>dispatch via SF</dd>
           </div>
         </dl>
       </div>
@@ -266,7 +266,7 @@ const heroStyle = computed(() => {
     <div class="marquee" aria-hidden="true">
       <div class="track">
         <span v-for="i in 2" :key="i" class="seq">
-          New Arrivals · 精选好物 · Good Design · 静谧生活 · Selected Objects ·
+          New Arrivals · Curated Objects · Good Design · Quiet Living · Selected Objects ·
         </span>
       </div>
     </div>
@@ -276,16 +276,16 @@ const heroStyle = computed(() => {
       <header class="cat-head">
         <div>
           <p class="eyebrow">Catalog</p>
-          <h2 class="cat-title">全部物件</h2>
+          <h2 class="cat-title">All objects</h2>
         </div>
         <p class="cat-note">
-          <span class="num">{{ totalCount || products.length }}</span> 件商品 · 数据来自本地快照
+          <span class="num">{{ totalCount || products.length }}</span> items · served from a local snapshot
         </p>
       </header>
 
       <div class="filters">
         <div class="cats">
-          <button :class="{ on: !category }" @click="setCat('')">全部</button>
+          <button :class="{ on: !category }" @click="setCat('')">All</button>
           <button
             v-for="c in cats"
             :key="c.name"
@@ -357,18 +357,18 @@ const heroStyle = computed(() => {
         </router-link>
       </div>
 
-      <p v-if="!loading && !products.length" class="empty">这个分类下还没有商品，换一个看看</p>
+      <p v-if="!loading && !products.length" class="empty">Nothing in this category yet — try another</p>
     </section>
 
     <!-- ============ 尾部 CTA ============ -->
     <section class="outro">
-      <p class="eyebrow" v-scramble>还没想好？</p>
+      <p class="eyebrow" v-scramble>Still undecided?</p>
       <h2 class="outro-title">
-        让 AI 替你<br />
-        <span class="grad-text">挑一件对的</span>
+        Let the AI pick<br />
+        <span class="grad-text">the right one</span>
       </h2>
       <button class="outro-btn magnet" @mousemove="magnetMove" @mouseleave="magnetLeave" @click="openChat">
-        和导购聊两句
+        Chat with the concierge
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
         </svg>

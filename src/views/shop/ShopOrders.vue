@@ -8,11 +8,11 @@ const loading = ref(true)
 const busy = ref(false)
 
 const STATUS_TEXT = {
-  PENDING: '待付款',
-  PAID: '已付款',
-  SHIPPED: '已发货',
-  COMPLETED: '已完成',
-  CANCELLED: '已取消',
+  PENDING: 'Pending payment',
+  PAID: 'Paid',
+  SHIPPED: 'Shipped',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
 }
 
 async function load() {
@@ -41,7 +41,7 @@ async function pay(order) {
   busy.value = true
   try {
     await shopApi.pay(order.id)
-    ElMessage.success('付款成功，等待发货')
+    ElMessage.success('Payment received — preparing shipment')
     await load()
   } finally {
     busy.value = false
@@ -52,7 +52,7 @@ async function cancel(order) {
   busy.value = true
   try {
     await shopApi.cancel(order.id)
-    ElMessage.success('订单已取消')
+    ElMessage.success('Order cancelled')
     await load()
   } finally {
     busy.value = false
@@ -63,22 +63,22 @@ async function cancel(order) {
 <template>
   <div class="page">
     <header class="head">
-      <h1>我的订单</h1>
-      <p v-if="orders.length">共 {{ orders.length }} 笔</p>
+      <h1>My orders</h1>
+      <p v-if="orders.length">{{ orders.length }} in total</p>
     </header>
 
     <div v-if="loading" class="skeleton"></div>
 
     <div v-else-if="!orders.length" class="empty">
-      <p>还没有订单</p>
-      <router-link to="/shop">去挑点什么 →</router-link>
+      <p>No orders yet</p>
+      <router-link to="/shop">Go pick something →</router-link>
     </div>
 
     <ul v-else class="list">
       <li v-for="o in orders" :key="o.id" class="order">
         <div class="top">
           <div class="no">
-            订单号 <span>{{ o.orderNo }}</span>
+            Order no. <span>{{ o.orderNo }}</span>
           </div>
           <div class="status" :class="o.status.toLowerCase()">{{ STATUS_TEXT[o.status] || o.status }}</div>
         </div>
@@ -91,7 +91,7 @@ async function cancel(order) {
             </span>
             <div class="detail">
               <div class="nm">{{ it.productName }}</div>
-              <div class="qty">数量 × {{ it.quantity }}</div>
+              <div class="qty">Qty × {{ it.quantity }}</div>
             </div>
             <div class="price">¥{{ money(it.price) }}</div>
           </div>
@@ -103,17 +103,17 @@ async function cancel(order) {
             {{ o.receiverAddress }}
           </div>
           <div class="right">
-            <span class="total">合计 ¥{{ money(o.totalAmount) }}</span>
+            <span class="total">Total ¥{{ money(o.totalAmount) }}</span>
             <template v-if="o.status === 'PENDING'">
-              <button class="ghost" :disabled="busy" @click="cancel(o)">取消订单</button>
-              <button class="pay" :disabled="busy" @click="pay(o)">立即付款</button>
+              <button class="ghost" :disabled="busy" @click="cancel(o)">Cancel order</button>
+              <button class="pay" :disabled="busy" @click="pay(o)">Pay now</button>
             </template>
           </div>
         </div>
       </li>
     </ul>
 
-    <p v-if="orders.length" class="hint">订单进度可以直接问右下角的智能客服，例如「我的订单到哪了」。</p>
+    <p v-if="orders.length" class="hint">Ask the concierge at the bottom right about any order — e.g. "where is my order?"</p>
   </div>
 </template>
 
