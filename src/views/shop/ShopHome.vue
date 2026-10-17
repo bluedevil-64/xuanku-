@@ -3,11 +3,14 @@ import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } fr
 import { useRoute, useRouter } from 'vue-router'
 import { shopApi } from '../../api'
 import { demoProducts, demoCategories } from '../../api/demo'
+import { useCartStore } from '../../stores/cart'
+import { ElMessage } from 'element-plus'
 import WavesBg from '../../components/WavesBg.vue'
 
 const route = useRoute()
 const router = useRouter()
 const openChat = inject('openChat', () => {})
+const cart = useCartStore()
 
 const products = ref([])
 const cats = ref([])
@@ -113,6 +116,12 @@ function onScroll() {
 
 function money(v) {
   return Number(v ?? 0).toLocaleString('zh-CN', { maximumFractionDigits: 2 })
+}
+
+/** 卡片快速加购：不进详情页，一键入车 */
+function quickAdd(p) {
+  cart.add(p, 1)
+  ElMessage.success(`Added to cart · ${p.name}`)
 }
 
 /** 图片解码完成后再淡入，避免黑块闪一下 */
@@ -322,8 +331,18 @@ const heroStyle = computed(() => {
                 @load="onImgLoad(p.id)"
               />
               <span v-else class="shape"></span>
-              <span v-if="p.tag" class="tag">{{ p.tag }}</span>
-              <span class="sheen" aria-hidden="true"></span>
+            <span v-if="p.tag" class="tag">{{ p.tag }}</span>
+            <button
+              class="quick"
+              :aria-label="`Add ${p.name} to cart`"
+              :title="'Add to cart'"
+              @click.prevent.stop="quickAdd(p)"
+            >
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+              </svg>
+            </button>
+            <span class="sheen" aria-hidden="true"></span>
             </div>
 
             <div class="meta">
@@ -435,7 +454,7 @@ const heroStyle = computed(() => {
 
 .title {
   margin: 0;
-  font-size: clamp(46px, 8.6vw, 118px);
+  font-size: clamp(50px, 9vw, 128px);
   font-weight: 600;
   line-height: 0.96;
   letter-spacing: -0.05em;
@@ -450,11 +469,18 @@ const heroStyle = computed(() => {
   margin-top: 0.04em;
 }
 
-/* 逐字入场：blur + 上浮 + 轻微旋转，按 --d 错峰 */
+/* 逐字入场：blur + 上浮 + 轻微旋转，按 --d 错峰。
+   fill-mode 用 backwards——结束后不保留 to 帧，transform 交还给常规样式，
+   这样每个字符还能响应 :hover 跳起。 */
 .title .ch {
   display: inline-block;
-  animation: hero-char 0.95s var(--ease-out) both;
+  animation: hero-char 0.95s var(--ease-out) backwards;
   animation-delay: var(--d, 0s);
+  transition: transform 0.4s var(--ease-out);
+}
+
+.title .ch:hover {
+  transform: translateY(-0.12em) rotate(-2deg);
 }
 
 /* 渐变行整体入场（background-clip:text 不能拆字，拆了裁剪会失效） */
@@ -543,6 +569,42 @@ const heroStyle = computed(() => {
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s;
+}
+
+/* ShinyText：按钮文字上一道高光周期扫过（React Bits 同款思路） */
+.primary .label {
+  background: linear-gradient(
+    110deg,
+    #fff 0%,
+    #fff 44%,
+    rgba(255, 255, 255, 0.4) 50%,
+    #fff 56%,
+    #fff 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shiny 3.4s linear infinite;
+}
+
+@keyframes shiny {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary .label {
+    animation: none;
+    background: none;
+    color: #fff;
+    -webkit-text-fill-color: currentColor;
+  }
 }
 
 .primary:hover .core {
@@ -1004,6 +1066,49 @@ const heroStyle = computed(() => {
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--text-1);
+}
+
+/* 快速加购：悬停浮现，触屏常显 */
+.quick {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-1);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.3s, transform 0.4s var(--ease-out), background-color 0.2s;
+}
+
+.card:hover .quick {
+  opacity: 1;
+  transform: none;
+}
+
+.quick:hover {
+  background: var(--text-1);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.quick:active {
+  transform: scale(0.92);
+}
+
+@media (hover: none) {
+  .quick {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .meta {
