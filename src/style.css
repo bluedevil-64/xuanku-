@@ -155,6 +155,16 @@ a {
   color: inherit;
 }
 
+/* ===== 自定义光标（CursorFx 启用时隐藏原生光标，输入类保留） ===== */
+html.has-cursor-fx,
+html.has-cursor-fx * {
+  cursor: none !important;
+}
+html.has-cursor-fx input,
+html.has-cursor-fx textarea {
+  cursor: text !important;
+}
+
 /* 路由切换：轻淡入 */
 @keyframes page-in {
   from {

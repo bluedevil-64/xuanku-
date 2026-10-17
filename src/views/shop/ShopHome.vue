@@ -18,6 +18,28 @@ const loading = ref(true)
 const scrollY = ref(0)
 let raf = 0
 
+/** 逐字标题：第一行拆成单字错峰入场；第二行是渐变文字，只能整行动画 */
+const TITLE_L1 = '把好设计'
+
+/** 数据条数字滚动 */
+const shown = reactive({ products: 0, cats: 0, hours: 0 })
+
+function animateCount(key, target, dur = 1000) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    shown[key] = target
+    return
+  }
+  const t0 = performance.now()
+  const from = shown[key]
+  const tick = (t) => {
+    const k = Math.min(1, (t - t0) / dur)
+    const e = 1 - Math.pow(1 - k, 3)
+    shown[key] = Math.round(from + (target - from) * e)
+    if (k < 1) requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+}
+
 const SORTS = [
   { key: 'default', label: '综合' },
   { key: 'new', label: '最新' },
@@ -45,6 +67,7 @@ async function load() {
     products.value = page.records || []
   } finally {
     loading.value = false
+    animateCount('products', products.value.length || 12)
   }
 }
 
@@ -60,8 +83,17 @@ onMounted(() => {
   load()
   shopApi
     .categories(true)
-    .then((list) => (cats.value = list))
-    .catch(() => demoCategories().then((list) => (cats.value = list)))
+    .then((list) => {
+      cats.value = list
+      animateCount('cats', list.length || 8)
+    })
+    .catch(() =>
+      demoCategories().then((list) => {
+        cats.value = list
+        animateCount('cats', list.length || 8)
+      }),
+    )
+  animateCount('hours', 24, 1300)
 
   onScroll()
   window.addEventListener('scroll', onScroll, { passive: true })
@@ -105,6 +137,17 @@ function magnetLeave(e) {
   el.style.transform = ''
 }
 
+/** 首屏聚光：一道极淡的暗晕跟随鼠标，像纸面被手电压住 */
+const heroEl = ref(null)
+
+function heroSpot(e) {
+  const el = heroEl.value
+  if (!el) return
+  const r = el.getBoundingClientRect()
+  el.style.setProperty('--hx', `${e.clientX - r.left}px`)
+  el.style.setProperty('--hy', `${e.clientY - r.top}px`)
+}
+
 /** 卡片光斑 + 轻微 3D 倾斜（作用在内层，避免与 reveal 的 transform 打架） */
 function cardMove(e) {
   const el = e.currentTarget
@@ -144,15 +187,24 @@ const heroStyle = computed(() => {
 <template>
   <div class="home">
     <!-- ============ HERO ============ -->
-    <section class="hero">
+    <section ref="heroEl" class="hero" @mousemove="heroSpot">
       <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-spot" aria-hidden="true"></div>
 
       <div class="hero-inner" :style="heroStyle">
         <p class="eyebrow hero-in">Selected Objects · 2026</p>
 
-        <h1 class="title hero-in">
-          <span class="line">把好设计</span>
-          <span class="line grad-text">带回家里</span>
+        <h1 class="title">
+          <span class="line">
+            <span
+              v-for="(ch, i) in TITLE_L1"
+              :key="`a${i}`"
+              class="ch"
+              :style="{ '--d': `${0.12 + i * 0.055}s` }"
+              >{{ ch }}</span
+            >
+          </span>
+          <span class="line grad-text ch-line" :style="{ '--d': '0.4s' }">带回家里</span>
         </h1>
 
         <p class="lede hero-in">
@@ -180,17 +232,17 @@ const heroStyle = computed(() => {
 
         <dl class="stats hero-in">
           <div>
-            <dt>{{ products.length || 12 }}</dt>
+            <dt>{{ shown.products }}</dt>
             <dd>件在售</dd>
           </div>
           <span class="rule"></span>
           <div>
-            <dt>{{ cats.length || 8 }}</dt>
+            <dt>{{ shown.cats }}</dt>
             <dd>个品类</dd>
           </div>
           <span class="rule"></span>
           <div>
-            <dt>24h</dt>
+            <dt>{{ shown.hours }}h</dt>
             <dd>顺丰发出</dd>
           </div>
         </dl>
@@ -346,6 +398,24 @@ const heroStyle = computed(() => {
   pointer-events: none;
 }
 
+/* 鼠标聚光：极淡暗晕跟随，白纸被轻轻压出一块阴影 */
+.hero-spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s;
+  background: radial-gradient(
+    420px circle at var(--hx, 50%) var(--hy, 40%),
+    rgba(0, 0, 0, 0.045),
+    transparent 70%
+  );
+}
+
+.hero:hover .hero-spot {
+  opacity: 1;
+}
+
 .hero-inner {
   position: relative;
   max-width: 1060px;
@@ -373,6 +443,33 @@ const heroStyle = computed(() => {
 
 .title .line + .line {
   margin-top: 0.04em;
+}
+
+/* 逐字入场：blur + 上浮 + 轻微旋转，按 --d 错峰 */
+.title .ch {
+  display: inline-block;
+  animation: hero-char 0.95s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+
+/* 渐变行整体入场（background-clip:text 不能拆字，拆了裁剪会失效） */
+.title .ch-line {
+  display: block;
+  animation: hero-char 0.95s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes hero-char {
+  from {
+    opacity: 0;
+    transform: translateY(30px) rotate(3.5deg);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
 }
 
 .lede {

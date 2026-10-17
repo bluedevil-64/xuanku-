@@ -5,6 +5,7 @@ import { authApi } from '../api'
 import { useUserStore } from '../stores/user'
 import { useCartStore } from '../stores/cart'
 import AiDock from './AiDock.vue'
+import CursorFx from './CursorFx.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,6 +13,7 @@ const store = useUserStore()
 const cart = useCartStore()
 const chatOpen = ref(false)
 const scrolled = ref(false)
+const progress = ref(0)
 
 provide('openChat', () => {
   chatOpen.value = true
@@ -19,6 +21,9 @@ provide('openChat', () => {
 
 function onScroll() {
   scrolled.value = window.scrollY > 24
+  const doc = document.documentElement
+  const max = doc.scrollHeight - window.innerHeight
+  progress.value = max > 0 ? Math.min(1, window.scrollY / max) : 0
 }
 
 onMounted(() => {
@@ -48,6 +53,9 @@ async function logout() {
       <div class="mesh"></div>
       <div class="vignette"></div>
     </div>
+
+    <!-- 顶部滚动进度线 -->
+    <div class="progress" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true"></div>
 
     <header class="nav" :class="{ compact: scrolled }">
       <div class="bar">
@@ -118,6 +126,7 @@ async function logout() {
     </footer>
 
     <AiDock v-model:open="chatOpen" />
+    <CursorFx />
   </div>
 </template>
 
@@ -185,6 +194,20 @@ async function logout() {
 
 .vignette {
   display: none;
+}
+
+/* ---------- 顶部滚动进度线 ---------- */
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 200;
+  background: var(--text-1);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  pointer-events: none;
 }
 
 /* ---------- 导航 ---------- */
