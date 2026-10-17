@@ -1,0 +1,7 @@
+# Cloudflare Pages 路由规则
+# 前端是 History 模式 SPA：直接访问 /shop/p/1 或 /admin/chat 时，
+# 静态服务器找不到对应文件，必须回退到 index.html 由 Vue Router 接管。
+#
+# 若之后要接公网后端，在这一行**之前**加反代规则（顺序自上而下匹配）：
+#   /api/*  https://your-backend.example.com/api/:splat  200
+/*    /index.html   200
