@@ -179,8 +179,8 @@ async function logout() {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #1d1d1f;
-  color: #fff;
+  background: #f4f4f7;
+  color: #08080c;
   font-size: 24px;
   font-weight: 500;
   flex: none;
@@ -191,18 +191,18 @@ async function logout() {
   font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.8px;
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .profile p {
   margin: 6px 0 0;
   font-size: 13px;
-  color: #86868b;
+  color: var(--text-3);
 }
 
 .block {
   padding: 32px 0;
-  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--hairline);
 }
 
 .block h2 {
@@ -211,7 +211,7 @@ async function logout() {
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #a1a1a6;
+  color: var(--text-3);
 }
 
 .field {
@@ -225,7 +225,7 @@ async function logout() {
   width: 96px;
   flex: none;
   font-size: 13.5px;
-  color: #6e6e73;
+  color: var(--text-2);
 }
 
 .field input {
@@ -234,8 +234,8 @@ async function logout() {
   padding: 0 14px;
   border: none;
   border-radius: 12px;
-  background: #f5f5f7;
-  color: #1d1d1f;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-1);
   font-size: 14px;
   font-family: inherit;
   outline: none;
@@ -243,24 +243,24 @@ async function logout() {
 }
 
 .field input::placeholder {
-  color: #a1a1a6;
+  color: var(--text-3);
 }
 
 .field input:focus {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 0 1px #1d1d1f;
 }
 
 .field.readonly span {
   flex: 1;
   font-size: 14px;
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .field.readonly em {
   font-style: normal;
   font-size: 12px;
-  color: #a1a1a6;
+  color: var(--text-3);
 }
 
 .save {
@@ -268,8 +268,8 @@ async function logout() {
   padding: 0 20px;
   border: none;
   border-radius: 999px;
-  background: #1d1d1f;
-  color: #fff;
+  background: #f4f4f7;
+  color: #08080c;
   font-size: 13.5px;
   font-family: inherit;
   cursor: pointer;
@@ -282,7 +282,7 @@ async function logout() {
 }
 
 .save:not(:disabled):hover {
-  background: #000;
+  background: #ffffff;
 }
 
 .primary {
@@ -291,8 +291,8 @@ async function logout() {
   margin-top: 8px;
   border: none;
   border-radius: 999px;
-  background: #1d1d1f;
-  color: #fff;
+  background: #f4f4f7;
+  color: #08080c;
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
@@ -305,7 +305,7 @@ async function logout() {
 }
 
 .primary:not(:disabled):hover {
-  background: #000;
+  background: #ffffff;
 }
 
 .links {
@@ -322,15 +322,15 @@ async function logout() {
 
 .links a {
   font-size: 14px;
-  color: #1d1d1f;
+  color: var(--text-1);
   text-decoration: none;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 2px;
   transition: border-color 0.2s;
 }
 
 .links a:hover {
-  border-color: #1d1d1f;
+  border-color: var(--text-1);
 }
 
 .quiet {
@@ -339,13 +339,13 @@ async function logout() {
   padding: 0;
   font-size: 14px;
   font-family: inherit;
-  color: #a1a1a6;
+  color: var(--text-3);
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .quiet:hover {
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 @media (max-width: 640px) {

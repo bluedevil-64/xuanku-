@@ -1,5 +1,5 @@
 <script setup>
-import { inject, onMounted, reactive, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { shopApi } from '../../api'
 import { demoProducts, demoCategories } from '../../api/demo'
@@ -14,22 +14,24 @@ const category = ref(route.query.c || '')
 const sort = ref('default')
 const loading = ref(true)
 
+/** 滚动进度：只用来做 hero 视差与导航态，不驱动布局 */
+const scrollY = ref(0)
+let raf = 0
+
 const SORTS = [
   { key: 'default', label: '综合' },
   { key: 'new', label: '最新' },
-  { key: 'price_asc', label: '价格由低到高' },
-  { key: 'price_desc', label: '价格由高到低' },
+  { key: 'price_asc', label: '价格 ↑' },
+  { key: 'price_desc', label: '价格 ↓' },
 ]
+
+const totalCount = computed(() => cats.value.reduce((n, c) => n + Number(c.count || 0), 0))
 
 async function load() {
   loading.value = true
   try {
     const page = await shopApi.products(
-      {
-        category: category.value || undefined,
-        sort: sort.value,
-        size: 24,
-      },
+      { category: category.value || undefined, sort: sort.value, size: 24 },
       true,
     )
     products.value = page.records || []
@@ -59,13 +61,29 @@ onMounted(() => {
   shopApi
     .categories(true)
     .then((list) => (cats.value = list))
-    .catch(() => demoCategories().then((list) => (cats.value = list)))})
+    .catch(() => demoCategories().then((list) => (cats.value = list)))
+
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll)
+  cancelAnimationFrame(raf)
+})
+
+function onScroll() {
+  cancelAnimationFrame(raf)
+  raf = requestAnimationFrame(() => {
+    scrollY.value = window.scrollY
+  })
+}
 
 function money(v) {
   return Number(v ?? 0).toLocaleString('zh-CN', { maximumFractionDigits: 2 })
 }
 
-/** 图片解码完成后再淡入，避免白块闪一下 */
+/** 图片解码完成后再淡入，避免黑块闪一下 */
 const loaded = reactive(new Set())
 function onImgLoad(id) {
   loaded.add(id)
@@ -75,8 +93,8 @@ function onImgLoad(id) {
 function magnetMove(e) {
   const el = e.currentTarget
   const r = el.getBoundingClientRect()
-  const x = ((e.clientX - r.left - r.width / 2) * 0.16).toFixed(1)
-  const y = ((e.clientY - r.top - r.height / 2) * 0.24).toFixed(1)
+  const x = ((e.clientX - r.left - r.width / 2) * 0.14).toFixed(1)
+  const y = ((e.clientY - r.top - r.height / 2) * 0.22).toFixed(1)
   el.style.transition = 'none'
   el.style.transform = `translate(${x}px, ${y}px)`
 }
@@ -87,32 +105,124 @@ function magnetLeave(e) {
   el.style.transform = ''
 }
 
+/** 卡片光斑 + 轻微 3D 倾斜（作用在内层，避免与 reveal 的 transform 打架） */
+function cardMove(e) {
+  const el = e.currentTarget
+  const r = el.getBoundingClientRect()
+  const px = e.clientX - r.left
+  const py = e.clientY - r.top
+  el.style.setProperty('--mx', `${px}px`)
+  el.style.setProperty('--my', `${py}px`)
+  if (window.matchMedia('(pointer: coarse)').matches) return
+  const rx = ((py / r.height - 0.5) * -3.4).toFixed(2)
+  const ry = ((px / r.width - 0.5) * 3.4).toFixed(2)
+  el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`
+}
+
+function cardLeave(e) {
+  const el = e.currentTarget
+  el.style.transform = ''
+}
+
 /** 用 id 各位数字之和决定抽象图形，避免相邻 id 形状重复 */
 function shapeOf(id) {
   return String(id)
     .split('')
     .reduce((n, c) => n + Number(c), 0) % 4
 }
+
+/** hero 视差：位移 0.18 倍并淡出，上限 720px 防止长页面拖影 */
+const heroStyle = computed(() => {
+  const y = Math.min(scrollY.value, 720)
+  return {
+    transform: `translate3d(0, ${y * 0.18}px, 0)`,
+    opacity: String(Math.max(0, 1 - y / 620)),
+  }
+})
 </script>
 
 <template>
   <div class="home">
+    <!-- ============ HERO ============ -->
     <section class="hero">
-      <p class="eyebrow hero-in">AI 导购 · 精选好物</p>
-      <h1 class="hero-in">把好设计<br />带回家里</h1>
-      <p class="lede hero-in">
-        从耳机到沙发，每件都写清了参数与适用场景。<br />
-        拿不定主意，随时问 AI 客服。
-      </p>
-      <div class="cta hero-in">
-        <a class="primary magnet" href="#catalog" @mousemove="magnetMove" @mouseleave="magnetLeave">
-          开始选购
-        </a>
-        <button class="ghost" @click="openChat">问问 AI 客服 →</button>
+      <div class="hero-glow" aria-hidden="true"></div>
+
+      <div class="hero-inner" :style="heroStyle">
+        <p class="eyebrow hero-in">Selected Objects · 2026</p>
+
+        <h1 class="title hero-in">
+          <span class="line">把好设计</span>
+          <span class="line grad-text">带回家里</span>
+        </h1>
+
+        <p class="lede hero-in">
+          十二件被反复挑选的物件，参数和场景都写清楚了。<br />
+          挑不准，右下角的窗口替你拿主意。
+        </p>
+
+        <div class="cta hero-in">
+          <a
+            class="primary magnet"
+            href="#catalog"
+            @mousemove="magnetMove"
+            @mouseleave="magnetLeave"
+          >
+            <span>开始选购</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+          <button class="ghost" @click="openChat">
+            <span class="spark"></span>
+            问问 AI 导购
+          </button>
+        </div>
+
+        <dl class="stats hero-in">
+          <div>
+            <dt>{{ products.length || 12 }}</dt>
+            <dd>件在售</dd>
+          </div>
+          <span class="rule"></span>
+          <div>
+            <dt>{{ cats.length || 8 }}</dt>
+            <dd>个品类</dd>
+          </div>
+          <span class="rule"></span>
+          <div>
+            <dt>24h</dt>
+            <dd>顺丰发出</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="scroll-hint" aria-hidden="true">
+        <span class="rail"><span class="bead"></span></span>
+        <span class="txt">SCROLL</span>
       </div>
     </section>
 
+    <!-- ============ 滚动字条 ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="track">
+        <span v-for="i in 2" :key="i" class="seq">
+          New Arrivals · 精选好物 · Good Design · 静谧生活 · Selected Objects ·
+        </span>
+      </div>
+    </div>
+
+    <!-- ============ 商品目录 ============ -->
     <section id="catalog" class="catalog">
+      <header class="cat-head">
+        <div>
+          <p class="eyebrow">Catalog</p>
+          <h2 class="cat-title">全部物件</h2>
+        </div>
+        <p class="cat-note">
+          <span class="num">{{ totalCount || products.length }}</span> 件商品 · 数据来自本地快照
+        </p>
+      </header>
+
       <div class="filters">
         <div class="cats">
           <button :class="{ on: !category }" @click="setCat('')">全部</button>
@@ -147,136 +257,366 @@ function shapeOf(id) {
           :key="p.id"
           :to="`/shop/p/${p.id}`"
           class="card"
-          v-reveal="{ delay: (i % 4) * 60 }"
+          v-reveal="{ delay: (i % 4) * 70 }"
         >
-          <div class="visual" :class="[`tone-${p.tone}`, `s${shapeOf(p.id)}`]">
-            <img
-              v-if="p.image"
-              :src="p.image"
-              :alt="p.name"
-              class="photo"
-              :class="{ loaded: loaded.has(p.id) }"
-              loading="lazy"
-              @load="onImgLoad(p.id)"
-            />
-            <span v-else class="shape"></span>
-            <span v-if="p.tag" class="tag">{{ p.tag }}</span>
-          </div>
-          <div class="meta">
-            <h3>{{ p.name }}</h3>
-            <p class="sub">{{ p.subtitle }}</p>
-            <div class="price-row">
-              <span class="price">¥{{ money(p.price) }}</span>
-              <s v-if="p.originalPrice" class="was">¥{{ money(p.originalPrice) }}</s>
+          <div class="card-inner" @mousemove="cardMove" @mouseleave="cardLeave">
+            <div class="visual" :class="[`tone-${p.tone}`, `s${shapeOf(p.id)}`]">
+              <img
+                v-if="p.image"
+                :src="p.image"
+                :alt="p.name"
+                class="photo"
+                :class="{ loaded: loaded.has(p.id) }"
+                loading="lazy"
+                @load="onImgLoad(p.id)"
+              />
+              <span v-else class="shape"></span>
+              <span v-if="p.tag" class="tag">{{ p.tag }}</span>
+              <span class="sheen" aria-hidden="true"></span>
             </div>
+
+            <div class="meta">
+              <div class="meta-top">
+                <h3>{{ p.name }}</h3>
+                <span class="arrow">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </div>
+              <p class="sub">{{ p.subtitle }}</p>
+              <div class="price-row">
+                <span class="price">¥{{ money(p.price) }}</span>
+                <s v-if="p.originalPrice" class="was">¥{{ money(p.originalPrice) }}</s>
+                <span class="cat-dot">{{ p.category }}</span>
+              </div>
+            </div>
+
+            <span class="spot" aria-hidden="true"></span>
           </div>
         </router-link>
       </div>
 
-      <p v-if="!loading && !products.length" class="empty">没有找到相关商品，换个分类看看</p>
+      <p v-if="!loading && !products.length" class="empty">这个分类下还没有商品，换一个看看</p>
+    </section>
+
+    <!-- ============ 尾部 CTA ============ -->
+    <section class="outro">
+      <p class="eyebrow">还没想好？</p>
+      <h2 class="outro-title">
+        让 AI 替你<br />
+        <span class="grad-text">挑一件对的</span>
+      </h2>
+      <button class="outro-btn magnet" @mousemove="magnetMove" @mouseleave="magnetLeave" @click="openChat">
+        和导购聊两句
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
     </section>
   </div>
 </template>
 
 <style scoped>
+.home {
+  position: relative;
+}
+
+/* ================= HERO ================= */
 .hero {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 92px 40px 68px;
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px 120px;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: min(900px, 88vw);
+  height: min(900px, 88vw);
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(124, 108, 255, 0.16), transparent 62%);
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  max-width: 1060px;
   text-align: center;
+  will-change: transform, opacity;
 }
 
-/* 逐行错峰入场 */
 .hero .eyebrow {
-  animation-delay: 0.06s;
-}
-.hero h1 {
-  animation-delay: 0.14s;
-}
-.hero .lede {
-  animation-delay: 0.26s;
-}
-.hero .cta {
-  animation-delay: 0.36s;
+  margin: 0 0 26px;
+  color: #6d6d7d;
 }
 
-.eyebrow {
-  margin: 0 0 24px;
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  color: #86868b;
-}
-
-.hero h1 {
+.title {
   margin: 0;
-  font-size: 62px;
-  line-height: 1.05;
+  font-size: clamp(46px, 8.6vw, 118px);
   font-weight: 600;
-  letter-spacing: -2.6px;
-  color: #1d1d1f;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  color: #f5f5f8;
+}
+
+.title .line {
+  display: block;
+}
+
+.title .line + .line {
+  margin-top: 0.04em;
+}
+
+.title .grad-text {
+  background: linear-gradient(100deg, #cfc8ff 0%, #8f7dff 38%, #3ce8d2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 12px 44px rgba(124, 108, 255, 0.28));
 }
 
 .lede {
-  max-width: 520px;
-  margin: 28px auto 0;
-  font-size: 17px;
-  line-height: 1.65;
-  color: #6e6e73;
+  max-width: 560px;
+  margin: 30px auto 0;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--text-2);
 }
 
 .cta {
-  margin-top: 38px;
+  margin-top: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 22px;
+  gap: 18px;
+  flex-wrap: wrap;
 }
 
 .primary {
-  padding: 13px 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 50px;
+  padding: 0 28px;
   border-radius: 999px;
-  background: #1d1d1f;
-  color: #fff;
+  background: #f4f4f7;
+  color: #08080c;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
-  transition: background-color 0.2s, transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 18px 40px -20px rgba(255, 255, 255, 0.55);
+  transition: box-shadow 0.3s, transform 0.5s var(--ease-out);
 }
 
 .primary:hover {
-  background: #000;
+  box-shadow: 0 24px 54px -22px rgba(255, 255, 255, 0.75);
 }
 
 .ghost {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 50px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-1);
+  font-size: 13.5px;
   font-family: inherit;
-  color: #1d1d1f;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: border-color 0.3s, background-color 0.3s, transform 0.3s var(--ease-out);
 }
 
 .ghost:hover {
-  opacity: 0.6;
+  border-color: var(--brand-border);
+  background: rgba(124, 108, 255, 0.1);
+  transform: translateY(-1px);
 }
 
+.spark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 3px rgba(60, 232, 210, 0.14), 0 0 12px 1px rgba(60, 232, 210, 0.85);
+}
+
+.stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 26px;
+  margin: 58px 0 0;
+  padding: 16px 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.022);
+  backdrop-filter: blur(12px);
+}
+
+.stats > div {
+  text-align: left;
+}
+
+.stats dt {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats dd {
+  margin: 3px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+
+.stats .rule {
+  width: 1px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* 滚动提示 */
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.rail {
+  position: relative;
+  width: 1px;
+  height: 46px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.bead {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 14px;
+  background: linear-gradient(180deg, transparent, #cfc8ff);
+  animation: bead 2.4s var(--ease-out) infinite;
+}
+
+@keyframes bead {
+  0% {
+    transform: translateY(-16px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(46px);
+    opacity: 0;
+  }
+}
+
+.scroll-hint .txt {
+  font-size: 9.5px;
+  letter-spacing: 0.34em;
+  color: #4a4a56;
+}
+
+/* ================= MARQUEE ================= */
+.marquee {
+  position: relative;
+  padding: 26px 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: slide 42s linear infinite;
+}
+
+.seq {
+  flex: none;
+  padding-right: 12px;
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.13);
+  white-space: nowrap;
+}
+
+@keyframes slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ================= CATALOG ================= */
 .catalog {
-  max-width: 1240px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px 72px;
+  padding: 84px 32px 0;
+}
+
+.cat-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.cat-title {
+  margin: 12px 0 0;
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--text-1);
+}
+
+.cat-note {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.cat-note .num {
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
 }
 
 .filters {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
   flex-wrap: wrap;
-  padding: 22px 0 26px;
-  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border-1);
+  background: rgba(255, 255, 255, 0.022);
+  backdrop-filter: blur(14px);
+  margin-bottom: 34px;
 }
 
 .cats {
@@ -291,72 +631,110 @@ function shapeOf(id) {
   border: none;
   border-radius: 999px;
   background: transparent;
-  color: #6e6e73;
-  font-size: 13.5px;
+  color: var(--text-2);
+  font-size: 13px;
   font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.25s, color 0.25s, box-shadow 0.25s;
 }
 
 .cats button:hover {
-  color: #1d1d1f;
+  color: var(--text-1);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .cats button.on {
-  background: #1d1d1f;
+  background: linear-gradient(140deg, rgba(124, 108, 255, 0.95), rgba(86, 68, 200, 0.95));
   color: #fff;
+  box-shadow: 0 10px 24px -12px rgba(124, 108, 255, 0.95);
 }
 
 .cats .n {
   margin-left: 6px;
-  font-size: 11px;
-  opacity: 0.5;
+  font-size: 10.5px;
+  opacity: 0.55;
 }
 
 .sorts {
   display: flex;
   gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .sorts button {
-  padding: 6px 10px;
+  height: 28px;
+  padding: 0 12px;
   border: none;
+  border-radius: 999px;
   background: none;
-  color: #86868b;
-  font-size: 12.5px;
+  color: var(--text-3);
+  font-size: 12px;
   font-family: inherit;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s, background-color 0.2s;
 }
 
 .sorts button:hover {
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .sorts button.on {
-  color: #1d1d1f;
-  font-weight: 500;
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-1);
 }
 
+/* ---------- 网格 ---------- */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32px 20px;
+  gap: 22px;
 }
 
 .card {
+  display: block;
+  min-width: 0;
+  text-decoration: none;
+  border-radius: 24px;
+}
+
+.card-inner {
+  position: relative;
   display: flex;
   flex-direction: column;
-  text-decoration: none;
-  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  min-width: 0;
+  border-radius: 24px;
+  padding: 10px 10px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  transition: transform 0.5s var(--ease-out), border-color 0.4s, box-shadow 0.4s;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.card:hover {
-  transform: translateY(-4px);
+.card:hover .card-inner {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 34px 70px -34px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(124, 108, 255, 0.12);
 }
 
-.card:hover .visual {
-  box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.42);
+/* 鼠标光斑 */
+.spot {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(124, 108, 255, 0.24),
+    transparent 64%
+  );
+}
+
+.card:hover .spot {
+  opacity: 1;
 }
 
 .visual {
@@ -364,21 +742,40 @@ function shapeOf(id) {
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 4 / 3;
-  border-radius: 20px;
+  aspect-ratio: 4 / 3.4;
+  border-radius: 17px;
   overflow: hidden;
-  transition: box-shadow 0.4s;
+  isolation: isolate;
 }
 
-/* 抽象产品图：渐变底 + 几何形体（无图片时的兜底） */
+/* 悬停时一道高光斜扫过图面 */
+.sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    112deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.22) 46%,
+    rgba(255, 255, 255, 0.06) 54%,
+    transparent 66%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.85s var(--ease-out);
+}
+
+.card:hover .sheen {
+  transform: translateX(120%);
+}
+
 .shape {
   display: block;
   background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.28));
-  box-shadow: 0 30px 52px -22px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 30px 52px -22px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.7s var(--ease-out);
 }
 
-/* 实拍商品图 */
 .photo {
   position: absolute;
   inset: 0;
@@ -386,101 +783,129 @@ function shapeOf(id) {
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.32, 0.72, 0, 1);
+  transform: scale(1.04);
+  transition: opacity 0.8s ease, transform 1s var(--ease-out);
 }
 
 .photo.loaded {
   opacity: 1;
+  transform: scale(1);
 }
 
 .card:hover .photo {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .s0 .shape {
-  width: 42%;
+  width: 40%;
   aspect-ratio: 1;
   border-radius: 50%;
 }
-
 .s1 .shape {
-  width: 20%;
+  width: 19%;
   aspect-ratio: 1 / 2;
   border-radius: 999px;
 }
-
 .s2 .shape {
-  width: 36%;
+  width: 34%;
   aspect-ratio: 1;
   border-radius: 26%;
 }
-
 .s3 .shape {
-  width: 38%;
+  width: 36%;
   aspect-ratio: 1;
   border-radius: 50% 50% 12% 12%;
 }
 
 .tone-graphite {
-  background: linear-gradient(148deg, #4a4a4d 0%, #1d1d1f 72%);
+  background: linear-gradient(148deg, #3d3d45 0%, #16161c 74%);
 }
 .tone-graphite .shape {
-  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.04));
-  box-shadow: 0 30px 52px -22px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.05));
 }
 .tone-sand {
-  background: linear-gradient(148deg, #f2ebe0 0%, #d8cab6 100%);
+  background: linear-gradient(148deg, #d9c9ae 0%, #9c8a70 100%);
 }
 .tone-violet {
-  background: linear-gradient(148deg, #e6e1fc 0%, #b0a8e9 100%);
+  background: linear-gradient(148deg, #b8b0e8 0%, #6b5fa8 100%);
 }
 .tone-cream {
-  background: linear-gradient(148deg, #fbf6ec 0%, #e7dbc5 100%);
+  background: linear-gradient(148deg, #e6d9c0 0%, #b3a184 100%);
 }
 .tone-ocean {
-  background: linear-gradient(148deg, #e3f0f8 0%, #a6c7db 100%);
+  background: linear-gradient(148deg, #a9c9dd 0%, #5d7f95 100%);
 }
 .tone-stone {
-  background: linear-gradient(148deg, #f0edea 0%, #cbc6be 100%);
+  background: linear-gradient(148deg, #cfc8bf 0%, #8d867d 100%);
 }
 .tone-rose {
-  background: linear-gradient(148deg, #fce6eb 0%, #e2aec0 100%);
+  background: linear-gradient(148deg, #e0b3c2 0%, #a06a7e 100%);
 }
 .tone-emerald {
-  background: linear-gradient(148deg, #e4f1e9 0%, #a6ccb7 100%);
+  background: linear-gradient(148deg, #a8cbb8 0%, #5e8570 100%);
 }
 
 .tag {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 4px 11px;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  padding: 5px 11px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(10px);
-  font-size: 11px;
+  background: rgba(10, 10, 14, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  font-size: 10.5px;
   font-weight: 500;
-  color: #1d1d1f;
+  letter-spacing: 0.02em;
+  color: #f0f0f4;
 }
 
 .meta {
-  padding: 15px 2px 0;
+  min-width: 0;
+  padding: 15px 8px 0;
+  transform: translateZ(18px);
+}
+
+.meta-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
 }
 
 .meta h3 {
+  min-width: 0;
   margin: 0;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 500;
-  letter-spacing: -0.2px;
-  color: #1d1d1f;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arrow {
+  flex: none;
+  color: var(--text-3);
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: opacity 0.3s, transform 0.35s var(--ease-out), color 0.3s;
+}
+
+.card:hover .arrow {
+  opacity: 1;
+  transform: none;
+  color: var(--accent-2);
 }
 
 .sub {
-  margin: 5px 0 0;
-  min-height: 19px;
-  font-size: 12.5px;
+  margin: 6px 0 0;
+  font-size: 12px;
   line-height: 1.5;
-  color: #86868b;
+  color: #7f7f8d;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -490,26 +915,41 @@ function shapeOf(id) {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .price {
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 600;
-  color: #1d1d1f;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
 }
 
 .was {
-  font-size: 12.5px;
-  color: #b0b0b6;
+  font-size: 11.5px;
+  color: #4f4f5b;
+  font-variant-numeric: tabular-nums;
+}
+
+.cat-dot {
+  margin-left: auto;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: #45454f;
 }
 
 .skeleton {
-  aspect-ratio: 4 / 3;
-  border-radius: 20px;
-  background: linear-gradient(90deg, #f5f5f7 25%, #eeeef1 37%, #f5f5f7 63%);
+  aspect-ratio: 4 / 3.4;
+  border-radius: 24px;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.07) 37%,
+    rgba(255, 255, 255, 0.03) 63%
+  );
   background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
+  animation: shimmer 1.5s ease infinite;
 }
 
 @keyframes shimmer {
@@ -522,37 +962,111 @@ function shapeOf(id) {
 }
 
 .empty {
-  padding: 64px 0;
+  padding: 80px 0;
   text-align: center;
-  font-size: 14px;
-  color: #a1a1a6;
+  font-size: 13.5px;
+  color: var(--text-3);
 }
 
-@media (max-width: 1000px) {
+/* ================= OUTRO ================= */
+.outro {
+  max-width: 1200px;
+  margin: 120px auto 0;
+  padding: 0 32px;
+  text-align: center;
+}
+
+.outro-title {
+  margin: 18px 0 0;
+  font-size: clamp(34px, 5.4vw, 64px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  color: var(--text-1);
+}
+
+.outro-title .grad-text {
+  background: linear-gradient(100deg, #cfc8ff, #8f7dff 45%, #3ce8d2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.outro-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 50px;
+  margin-top: 34px;
+  padding: 0 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-1);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.3s, background-color 0.3s, transform 0.5s var(--ease-out);
+}
+
+.outro-btn:hover {
+  border-color: var(--brand-border);
+  background: rgba(124, 108, 255, 0.12);
+}
+
+/* ================= 响应式 ================= */
+@media (max-width: 1080px) {
   .grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .hero {
-    padding: 80px 20px 64px;
-  }
-  .hero h1 {
-    font-size: 40px;
-    letter-spacing: -1.4px;
+    min-height: 82vh;
+    padding: 24px 20px 96px;
   }
   .lede {
-    font-size: 15px;
+    font-size: 14.5px;
+  }
+  .stats {
+    gap: 18px;
+    padding: 14px 20px;
   }
   .catalog {
-    padding: 0 20px 48px;
+    padding: 60px 20px 0;
+  }
+  .cat-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .sorts {
+    display: none;
   }
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px 14px;
+    gap: 14px;
   }
-  .sorts {
+  .card-inner {
+    padding: 8px 8px 14px;
+    border-radius: 20px;
+  }
+  .outro {
+    margin-top: 84px;
+    padding: 0 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+  .bead {
+    animation: none;
+  }
+  .sheen {
     display: none;
   }
 }

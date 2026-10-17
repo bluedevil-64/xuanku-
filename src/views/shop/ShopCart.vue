@@ -110,7 +110,7 @@ async function submit() {
         <button class="submit" :disabled="submitting" @click="submit">
           {{ submitting ? '提交中…' : store.isLogin ? '提交订单' : '登录后提交订单' }}
         </button>
-        <p class="tip">下单后可让在线客服帮你查订单进度</p>
+        <p class="tip">纯静态展示站，下单不会产生真实订单</p>
       </aside>
     </div>
   </div>
@@ -135,13 +135,13 @@ async function submit() {
   font-size: 40px;
   font-weight: 600;
   letter-spacing: -1.6px;
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .head p {
   margin: 0;
   font-size: 13px;
-  color: #86868b;
+  color: var(--text-3);
 }
 
 .empty {
@@ -152,14 +152,14 @@ async function submit() {
 .empty p {
   margin: 0 0 18px;
   font-size: 16px;
-  color: #86868b;
+  color: var(--text-3);
 }
 
 .empty a {
   font-size: 14px;
-  color: #1d1d1f;
+  color: var(--text-1);
   text-decoration: none;
-  border-bottom: 0.5px solid #1d1d1f;
+  border-bottom: 1px solid var(--text-1);
   padding-bottom: 2px;
 }
 
@@ -174,7 +174,7 @@ async function submit() {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--hairline);
 }
 
 .item {
@@ -183,7 +183,7 @@ async function submit() {
   align-items: center;
   gap: 20px;
   padding: 22px 0;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .thumb {
@@ -219,7 +219,7 @@ async function submit() {
 .name {
   font-size: 15px;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--text-1);
   text-decoration: none;
   letter-spacing: -0.2px;
 }
@@ -231,7 +231,7 @@ async function submit() {
 .sub {
   margin: 5px 0 0;
   font-size: 12.5px;
-  color: #86868b;
+  color: var(--text-3);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -240,7 +240,7 @@ async function submit() {
 .unit {
   margin: 8px 0 0;
   font-size: 12.5px;
-  color: #a1a1a6;
+  color: var(--text-3);
 }
 
 .qty {
@@ -250,7 +250,7 @@ async function submit() {
   height: 34px;
   padding: 0 3px;
   border-radius: 999px;
-  background: #f5f5f7;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .qty button {
@@ -259,7 +259,7 @@ async function submit() {
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: #1d1d1f;
+  color: var(--text-1);
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
@@ -267,7 +267,7 @@ async function submit() {
 }
 
 .qty button:hover {
-  background: #e8e8ed;
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .qty span {
@@ -281,7 +281,7 @@ async function submit() {
   font-size: 15px;
   font-weight: 500;
   text-align: right;
-  color: #1d1d1f;
+  color: var(--text-1);
   font-variant-numeric: tabular-nums;
 }
 
@@ -291,7 +291,7 @@ async function submit() {
   padding: 0;
   font-size: 12.5px;
   font-family: inherit;
-  color: #a1a1a6;
+  color: var(--text-3);
   cursor: pointer;
   transition: color 0.2s;
 }
@@ -305,7 +305,7 @@ async function submit() {
   top: 96px;
   padding: 26px;
   border-radius: 22px;
-  background: #f5f5f7;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .row {
@@ -313,20 +313,20 @@ async function submit() {
   align-items: center;
   justify-content: space-between;
   font-size: 13.5px;
-  color: #6e6e73;
+  color: var(--text-2);
   padding: 6px 0;
 }
 
 .free {
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .row.total {
   margin-top: 10px;
   padding-top: 16px;
-  border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--hairline);
   font-size: 15px;
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .row.total span:last-child {
@@ -344,7 +344,7 @@ async function submit() {
 
 .form label {
   font-size: 12px;
-  color: #86868b;
+  color: var(--text-3);
   margin-bottom: 2px;
 }
 
@@ -353,8 +353,8 @@ async function submit() {
   padding: 0 14px;
   border: none;
   border-radius: 12px;
-  background: #fff;
-  color: #1d1d1f;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-1);
   font-size: 13.5px;
   font-family: inherit;
   outline: none;
@@ -362,7 +362,7 @@ async function submit() {
 }
 
 .form input::placeholder {
-  color: #b0b0b6;
+  color: #4f4f5b;
 }
 
 .form input:focus {
@@ -375,8 +375,8 @@ async function submit() {
   margin-top: 20px;
   border: none;
   border-radius: 999px;
-  background: #1d1d1f;
-  color: #fff;
+  background: #f4f4f7;
+  color: #08080c;
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
@@ -385,7 +385,7 @@ async function submit() {
 }
 
 .submit:not(:disabled):hover {
-  background: #000;
+  background: #ffffff;
 }
 
 .submit:disabled {
@@ -397,34 +397,34 @@ async function submit() {
   margin: 12px 0 0;
   font-size: 11.5px;
   line-height: 1.5;
-  color: #a1a1a6;
+  color: var(--text-3);
   text-align: center;
 }
 
 /* 缩略图配色（与商品卡一致） */
 .tone-graphite {
-  background: linear-gradient(148deg, #4a4a4d 0%, #1d1d1f 72%);
+  background: linear-gradient(148deg, #3d3d45 0%, #16161c 74%);
 }
 .tone-sand {
-  background: linear-gradient(148deg, #f2ebe0 0%, #d8cab6 100%);
+  background: linear-gradient(148deg, #d9c9ae 0%, #9c8a70 100%);
 }
 .tone-violet {
-  background: linear-gradient(148deg, #e6e1fc 0%, #b0a8e9 100%);
+  background: linear-gradient(148deg, #b8b0e8 0%, #6b5fa8 100%);
 }
 .tone-cream {
-  background: linear-gradient(148deg, #fbf6ec 0%, #e7dbc5 100%);
+  background: linear-gradient(148deg, #e6d9c0 0%, #b3a184 100%);
 }
 .tone-ocean {
-  background: linear-gradient(148deg, #e3f0f8 0%, #a6c7db 100%);
+  background: linear-gradient(148deg, #a9c9dd 0%, #5d7f95 100%);
 }
 .tone-stone {
-  background: linear-gradient(148deg, #f0edea 0%, #cbc6be 100%);
+  background: linear-gradient(148deg, #cfc8bf 0%, #8d867d 100%);
 }
 .tone-rose {
-  background: linear-gradient(148deg, #fce6eb 0%, #e2aec0 100%);
+  background: linear-gradient(148deg, #e0b3c2 0%, #a06a7e 100%);
 }
 .tone-emerald {
-  background: linear-gradient(148deg, #e4f1e9 0%, #a6ccb7 100%);
+  background: linear-gradient(148deg, #a8cbb8 0%, #5e8570 100%);
 }
 
 @media (max-width: 900px) {

@@ -57,12 +57,12 @@ async function doRegister() {
   <div class="auth">
     <div class="panel">
       <router-link to="/shop" class="brand">
-        <img src="/favicon.svg" class="mark" alt="AiDesk" width="28" height="28" />
-        <span>AiDesk Store</span>
+        <img src="/favicon.svg" class="mark" alt="XUANKU" width="28" height="28" />
+        <span>XUANKU</span>
       </router-link>
 
       <h1>欢迎回来</h1>
-      <p class="lede">购买、查看订单、联系客服，都在一个账号里。</p>
+      <p class="lede">这里是一个纯静态的视觉展示站，账号体系需要后端支持。</p>
 
       <div class="tabs">
         <button :class="{ on: tab === 'login' }" @click="tab = 'login'">登录</button>
@@ -110,7 +110,8 @@ async function doRegister() {
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background: #fff;
+  background: radial-gradient(70% 50% at 50% -10%, rgba(124, 108, 255, 0.18), transparent 62%),
+    radial-gradient(50% 42% at 88% 88%, rgba(60, 232, 210, 0.1), transparent 66%), var(--bg-canvas);
   box-sizing: border-box;
 }
 
@@ -127,7 +128,7 @@ async function doRegister() {
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.3px;
-  color: #1d1d1f;
+  color: var(--text-1);
   text-decoration: none;
 }
 
@@ -143,14 +144,14 @@ h1 {
   font-size: 38px;
   font-weight: 600;
   letter-spacing: -1.5px;
-  color: #1d1d1f;
+  color: var(--text-1);
 }
 
 .lede {
   margin: 12px 0 34px;
   font-size: 14.5px;
   line-height: 1.6;
-  color: #86868b;
+  color: var(--text-3);
 }
 
 .tabs {
@@ -159,7 +160,7 @@ h1 {
   padding: 3px;
   margin-bottom: 26px;
   border-radius: 12px;
-  background: #f5f5f7;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .tabs button {
@@ -168,7 +169,7 @@ h1 {
   border: none;
   border-radius: 9px;
   background: transparent;
-  color: #86868b;
+  color: var(--text-3);
   font-size: 13.5px;
   font-weight: 500;
   font-family: inherit;
@@ -178,9 +179,9 @@ h1 {
 }
 
 .tabs button.on {
-  background: #fff;
-  color: #1d1d1f;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-1);
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
 }
 
 form {
@@ -194,8 +195,8 @@ input {
   padding: 0 16px;
   border: none;
   border-radius: 12px;
-  background: #f5f5f7;
-  color: #1d1d1f;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-1);
   font-size: 14.5px;
   font-family: inherit;
   outline: none;
@@ -203,11 +204,11 @@ input {
 }
 
 input::placeholder {
-  color: #a1a1a6;
+  color: var(--text-3);
 }
 
 input:focus {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 0 1px #1d1d1f;
 }
 
@@ -216,8 +217,8 @@ input:focus {
   margin-top: 10px;
   border: none;
   border-radius: 999px;
-  background: #1d1d1f;
-  color: #fff;
+  background: #f4f4f7;
+  color: #08080c;
   font-size: 15px;
   font-weight: 500;
   font-family: inherit;
@@ -226,7 +227,7 @@ input:focus {
 }
 
 .submit:not(:disabled):hover {
-  background: #000;
+  background: #ffffff;
 }
 
 .submit:disabled {
@@ -237,7 +238,7 @@ input:focus {
 .foot {
   margin: 24px 0 0;
   font-size: 11.5px;
-  color: #b0b0b6;
+  color: #4f4f5b;
   text-align: center;
 }
 
