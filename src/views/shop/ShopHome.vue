@@ -3,6 +3,7 @@ import { computed, inject, onBeforeUnmount, onMounted, reactive, ref, watch } fr
 import { useRoute, useRouter } from 'vue-router'
 import { shopApi } from '../../api'
 import { demoProducts, demoCategories } from '../../api/demo'
+import WavesBg from '../../components/WavesBg.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -188,11 +189,12 @@ const heroStyle = computed(() => {
   <div class="home">
     <!-- ============ HERO ============ -->
     <section ref="heroEl" class="hero" @mousemove="heroSpot">
+      <WavesBg class="hero-waves" />
       <div class="hero-glow" aria-hidden="true"></div>
       <div class="hero-spot" aria-hidden="true"></div>
 
       <div class="hero-inner" :style="heroStyle">
-        <p class="eyebrow hero-in">Selected Objects · 2026</p>
+        <p class="eyebrow hero-in" v-scramble>Selected Objects · 2026</p>
 
         <h1 class="title">
           <span class="line">
@@ -219,10 +221,16 @@ const heroStyle = computed(() => {
             @mousemove="magnetMove"
             @mouseleave="magnetLeave"
           >
-            <span>开始选购</span>
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <span class="ring" aria-hidden="true">
+              <span class="beam"></span>
+              <span class="beam b2"></span>
+            </span>
+            <span class="core">
+              <span class="label">开始选购</span>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
           </a>
           <button class="ghost" @click="openChat">
             <span class="spark"></span>
@@ -354,7 +362,7 @@ const heroStyle = computed(() => {
 
     <!-- ============ 尾部 CTA ============ -->
     <section class="outro">
-      <p class="eyebrow">还没想好？</p>
+      <p class="eyebrow" v-scramble>还没想好？</p>
       <h2 class="outro-title">
         让 AI 替你<br />
         <span class="grad-text">挑一件对的</span>
@@ -384,6 +392,14 @@ const heroStyle = computed(() => {
   justify-content: center;
   padding: 40px 32px 120px;
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* 波浪线画布：垫在最底层，光晕之下 */
+.hero-waves {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .hero-glow {
@@ -418,6 +434,7 @@ const heroStyle = computed(() => {
 
 .hero-inner {
   position: relative;
+  z-index: 1;
   max-width: 1060px;
   text-align: center;
   will-change: transform, opacity;
@@ -490,22 +507,72 @@ const heroStyle = computed(() => {
 }
 
 .primary {
+  position: relative;
+  display: inline-flex;
+  height: 50px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #1d1d1f;
+  text-decoration: none;
+  transition: transform 0.5s var(--ease-out);
+}
+
+/* StarBorder：光点只在边缘 2px 环上绕行，中心被 .core 盖住 */
+.primary .ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.primary .beam {
+  position: absolute;
+  inset: -150%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 332deg,
+    rgba(255, 255, 255, 0.95) 352deg,
+    transparent 360deg
+  );
+  animation: beam-spin 4.2s linear infinite;
+}
+
+.primary .beam.b2 {
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg 344deg,
+    rgba(255, 255, 255, 0.5) 356deg,
+    transparent 360deg
+  );
+  animation-duration: 6.6s;
+  animation-direction: reverse;
+}
+
+.primary .core {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  height: 50px;
-  padding: 0 28px;
+  height: 100%;
+  padding: 0 26px;
   border-radius: 999px;
   background: #1d1d1f;
   color: #fff;
   font-size: 14px;
   font-weight: 500;
-  text-decoration: none;
-  transition: background-color 0.2s, transform 0.5s var(--ease-out);
+  transition: background-color 0.2s;
 }
 
-.primary:hover {
+.primary:hover .core {
   background: #000;
+}
+
+@keyframes beam-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 .ghost {
@@ -881,6 +948,29 @@ const heroStyle = computed(() => {
 
 .card:hover .photo {
   transform: scale(1.06);
+}
+
+/* 滚动驱动图片视差：图片随卡片在视口中的位置上下平移（零 JS，渐进增强） */
+@keyframes card-par {
+  from {
+    transform: scale(1.12) translateY(-4.5%);
+  }
+  to {
+    transform: scale(1.12) translateY(4.5%);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .photo.loaded {
+    animation: card-par linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 45%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .photo.loaded {
+      animation: none;
+    }
+  }
 }
 
 .s0 .shape {
