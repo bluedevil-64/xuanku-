@@ -48,7 +48,6 @@ const SORTS = [
   { key: 'price_desc', label: 'Price ↓' },
 ]
 
-const totalCount = computed(() => cats.value.reduce((n, c) => n + Number(c.count || 0), 0))
 
 async function load() {
   loading.value = true
@@ -209,11 +208,6 @@ const heroStyle = computed(() => {
           <span class="line grad-text ch-line" :style="{ '--d': '0.4s' }">comes home.</span>
         </h1>
 
-        <p class="lede hero-in">
-          Twelve carefully chosen objects — every spec and use case spelled out.<br />
-          When in doubt, the window at the bottom right decides for you.
-        </p>
-
         <div class="cta hero-in">
           <a
             class="primary magnet"
@@ -278,9 +272,6 @@ const heroStyle = computed(() => {
           <p class="eyebrow">Catalog</p>
           <h2 class="cat-title">All objects</h2>
         </div>
-        <p class="cat-note">
-          <span class="num">{{ totalCount || products.length }}</span> items · served from a local snapshot
-        </p>
       </header>
 
       <div class="filters">
@@ -337,18 +328,16 @@ const heroStyle = computed(() => {
 
             <div class="meta">
               <div class="meta-top">
-                <h3>{{ p.name }}</h3>
+                <h3 :title="p.name">{{ p.name }}</h3>
                 <span class="arrow">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </span>
               </div>
-              <p class="sub">{{ p.subtitle }}</p>
               <div class="price-row">
                 <span class="price">¥{{ money(p.price) }}</span>
                 <s v-if="p.originalPrice" class="was">¥{{ money(p.originalPrice) }}</s>
-                <span class="cat-dot">{{ p.category }}</span>
               </div>
             </div>
 
@@ -362,7 +351,6 @@ const heroStyle = computed(() => {
 
     <!-- ============ 尾部 CTA ============ -->
     <section class="outro">
-      <p class="eyebrow" v-scramble>Still undecided?</p>
       <h2 class="outro-title">
         Let the AI pick<br />
         <span class="grad-text">the right one</span>
@@ -487,14 +475,6 @@ const heroStyle = computed(() => {
     transform: none;
     filter: blur(0);
   }
-}
-
-.lede {
-  max-width: 560px;
-  margin: 30px auto 0;
-  font-size: 15.5px;
-  line-height: 1.85;
-  color: var(--text-2);
 }
 
 .cta {
@@ -746,17 +726,6 @@ const heroStyle = computed(() => {
   font-weight: 600;
   letter-spacing: -0.04em;
   color: var(--text-1);
-}
-
-.cat-note {
-  margin: 0 0 6px;
-  font-size: 12.5px;
-  color: var(--text-3);
-}
-
-.cat-note .num {
-  color: var(--text-1);
-  font-variant-numeric: tabular-nums;
 }
 
 .filters {
@@ -1077,16 +1046,6 @@ const heroStyle = computed(() => {
   color: var(--text-1);
 }
 
-.sub {
-  margin: 6px 0 0;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--text-3);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .price-row {
   display: flex;
   align-items: baseline;
@@ -1106,13 +1065,6 @@ const heroStyle = computed(() => {
   font-size: 11.5px;
   color: #b0b0b6;
   font-variant-numeric: tabular-nums;
-}
-
-.cat-dot {
-  margin-left: auto;
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
-  color: #b6b6be;
 }
 
 .skeleton {
@@ -1148,7 +1100,7 @@ const heroStyle = computed(() => {
 }
 
 .outro-title {
-  margin: 18px 0 0;
+  margin: 0;
   font-size: clamp(34px, 5.4vw, 64px);
   font-weight: 600;
   line-height: 1.1;
@@ -1189,9 +1141,6 @@ const heroStyle = computed(() => {
   .hero {
     min-height: 82vh;
     padding: 24px 20px 96px;
-  }
-  .lede {
-    font-size: 14.5px;
   }
   .stats {
     gap: 18px;
