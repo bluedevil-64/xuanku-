@@ -217,28 +217,26 @@ onBeforeUnmount(() => clearInterval(timer))
   gap: 9px;
   height: 48px;
   padding: 0 20px 0 16px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: none;
   border-radius: 999px;
-  background: linear-gradient(140deg, rgba(124, 108, 255, 0.95), rgba(80, 62, 190, 0.95));
+  background: #1d1d1f;
   color: #fff;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 18px 44px -16px rgba(124, 108, 255, 0.9);
-  transition: transform 0.35s var(--ease-out), box-shadow 0.35s, opacity 0.3s;
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.45);
+  transition: transform 0.35s var(--ease-out), background-color 0.2s;
 }
 
 .fab:hover {
   transform: translateY(-2px);
-  box-shadow: 0 24px 54px -16px rgba(124, 108, 255, 1);
+  background: #000;
 }
 
 .fab.on {
-  background: rgba(18, 18, 26, 0.9);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: var(--shadow-float);
-  backdrop-filter: blur(18px);
+  background: #1d1d1f;
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.45);
 }
 
 .fab-text {
@@ -249,7 +247,7 @@ onBeforeUnmount(() => clearInterval(timer))
   position: absolute;
   inset: -1px;
   border-radius: 999px;
-  border: 1px solid rgba(167, 155, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.22);
   animation: ripple 3.4s ease-out infinite;
   pointer-events: none;
 }

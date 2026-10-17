@@ -341,7 +341,7 @@ const heroStyle = computed(() => {
   width: min(900px, 88vw);
   height: min(900px, 88vw);
   transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(124, 108, 255, 0.16), transparent 62%);
+  background: radial-gradient(circle, rgba(124, 108, 255, 0.09), transparent 62%);
   filter: blur(30px);
   pointer-events: none;
 }
@@ -355,7 +355,7 @@ const heroStyle = computed(() => {
 
 .hero .eyebrow {
   margin: 0 0 26px;
-  color: #6d6d7d;
+  color: #86868b;
 }
 
 .title {
@@ -364,7 +364,7 @@ const heroStyle = computed(() => {
   font-weight: 600;
   line-height: 0.96;
   letter-spacing: -0.05em;
-  color: #f5f5f8;
+  color: var(--text-1);
 }
 
 .title .line {
@@ -373,15 +373,6 @@ const heroStyle = computed(() => {
 
 .title .line + .line {
   margin-top: 0.04em;
-}
-
-.title .grad-text {
-  background: linear-gradient(100deg, #cfc8ff 0%, #8f7dff 38%, #3ce8d2 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 12px 44px rgba(124, 108, 255, 0.28));
 }
 
 .lede {
@@ -408,17 +399,16 @@ const heroStyle = computed(() => {
   height: 50px;
   padding: 0 28px;
   border-radius: 999px;
-  background: #f4f4f7;
-  color: #08080c;
+  background: #1d1d1f;
+  color: #fff;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
-  box-shadow: 0 18px 40px -20px rgba(255, 255, 255, 0.55);
-  transition: box-shadow 0.3s, transform 0.5s var(--ease-out);
+  transition: background-color 0.2s, transform 0.5s var(--ease-out);
 }
 
 .primary:hover {
-  box-shadow: 0 24px 54px -22px rgba(255, 255, 255, 0.75);
+  background: #000;
 }
 
 .ghost {
@@ -428,18 +418,18 @@ const heroStyle = computed(() => {
   height: 50px;
   padding: 0 24px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
   color: var(--text-1);
-  font-size: 13.5px;
+  font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.3s, background-color 0.3s, transform 0.3s var(--ease-out);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s var(--ease-out);
 }
 
 .ghost:hover {
-  border-color: var(--brand-border);
-  background: rgba(124, 108, 255, 0.1);
+  border-color: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.4);
   transform: translateY(-1px);
 }
 
@@ -447,8 +437,8 @@ const heroStyle = computed(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent-2);
-  box-shadow: 0 0 0 3px rgba(60, 232, 210, 0.14), 0 0 12px 1px rgba(60, 232, 210, 0.85);
+  background: #34c759;
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.16);
 }
 
 .stats {
@@ -458,8 +448,8 @@ const heroStyle = computed(() => {
   margin: 58px 0 0;
   padding: 16px 30px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
 }
 
@@ -485,7 +475,7 @@ const heroStyle = computed(() => {
 .stats .rule {
   width: 1px;
   height: 26px;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(0, 0, 0, 0.08);
 }
 
 /* 滚动提示 */
@@ -504,7 +494,7 @@ const heroStyle = computed(() => {
   position: relative;
   width: 1px;
   height: 46px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
 
@@ -514,7 +504,7 @@ const heroStyle = computed(() => {
   left: 0;
   width: 1px;
   height: 14px;
-  background: linear-gradient(180deg, transparent, #cfc8ff);
+  background: linear-gradient(180deg, transparent, #1d1d1f);
   animation: bead 2.4s var(--ease-out) infinite;
 }
 
@@ -535,7 +525,7 @@ const heroStyle = computed(() => {
 .scroll-hint .txt {
   font-size: 9.5px;
   letter-spacing: 0.34em;
-  color: #4a4a56;
+  color: #b0b0b8;
 }
 
 /* ================= MARQUEE ================= */
@@ -561,7 +551,7 @@ const heroStyle = computed(() => {
   font-size: clamp(22px, 3.2vw, 42px);
   font-weight: 500;
   letter-spacing: -0.03em;
-  color: rgba(255, 255, 255, 0.13);
+  color: rgba(0, 0, 0, 0.07);
   white-space: nowrap;
 }
 
@@ -613,8 +603,8 @@ const heroStyle = computed(() => {
   flex-wrap: wrap;
   padding: 14px 16px;
   border-radius: 18px;
-  border: 1px solid var(--border-1);
-  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(14px);
   margin-bottom: 34px;
 }
@@ -644,9 +634,8 @@ const heroStyle = computed(() => {
 }
 
 .cats button.on {
-  background: linear-gradient(140deg, rgba(124, 108, 255, 0.95), rgba(86, 68, 200, 0.95));
+  background: #1d1d1f;
   color: #fff;
-  box-shadow: 0 10px 24px -12px rgba(124, 108, 255, 0.95);
 }
 
 .cats .n {
@@ -660,7 +649,7 @@ const heroStyle = computed(() => {
   gap: 2px;
   padding: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.035);
+  background: #f5f5f7;
 }
 
 .sorts button {
@@ -669,7 +658,7 @@ const heroStyle = computed(() => {
   border: none;
   border-radius: 999px;
   background: none;
-  color: var(--text-3);
+  color: #86868b;
   font-size: 12px;
   font-family: inherit;
   cursor: pointer;
@@ -681,8 +670,9 @@ const heroStyle = computed(() => {
 }
 
 .sorts button.on {
-  background: rgba(255, 255, 255, 0.09);
+  background: #fff;
   color: var(--text-1);
+  box-shadow: var(--shadow-pill);
 }
 
 /* ---------- 网格 ---------- */
@@ -706,19 +696,19 @@ const heroStyle = computed(() => {
   min-width: 0;
   border-radius: 24px;
   padding: 10px 10px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  background: linear-gradient(170deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012));
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: #fff;
   transition: transform 0.5s var(--ease-out), border-color 0.4s, box-shadow 0.4s;
   transform-style: preserve-3d;
   will-change: transform;
 }
 
 .card:hover .card-inner {
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 34px 70px -34px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(124, 108, 255, 0.12);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.3);
 }
 
-/* 鼠标光斑 */
+/* 鼠标光斑（浅色：淡灰） */
 .spot {
   position: absolute;
   inset: 0;
@@ -728,7 +718,7 @@ const heroStyle = computed(() => {
   transition: opacity 0.4s;
   background: radial-gradient(
     260px circle at var(--mx, 50%) var(--my, 0%),
-    rgba(124, 108, 255, 0.24),
+    rgba(0, 0, 0, 0.04),
     transparent 64%
   );
 }
@@ -757,8 +747,8 @@ const heroStyle = computed(() => {
   background: linear-gradient(
     112deg,
     transparent 32%,
-    rgba(255, 255, 255, 0.22) 46%,
-    rgba(255, 255, 255, 0.06) 54%,
+    rgba(255, 255, 255, 0.4) 46%,
+    rgba(255, 255, 255, 0.1) 54%,
     transparent 66%
   );
   transform: translateX(-120%);
@@ -818,31 +808,31 @@ const heroStyle = computed(() => {
 }
 
 .tone-graphite {
-  background: linear-gradient(148deg, #3d3d45 0%, #16161c 74%);
+  background: linear-gradient(148deg, #4a4a4d 0%, #1d1d1f 72%);
 }
 .tone-graphite .shape {
-  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.05));
+  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.04));
 }
 .tone-sand {
-  background: linear-gradient(148deg, #d9c9ae 0%, #9c8a70 100%);
+  background: linear-gradient(148deg, #f2ebe0 0%, #d8cab6 100%);
 }
 .tone-violet {
-  background: linear-gradient(148deg, #b8b0e8 0%, #6b5fa8 100%);
+  background: linear-gradient(148deg, #e6e1fc 0%, #b0a8e9 100%);
 }
 .tone-cream {
-  background: linear-gradient(148deg, #e6d9c0 0%, #b3a184 100%);
+  background: linear-gradient(148deg, #fbf6ec 0%, #e7dbc5 100%);
 }
 .tone-ocean {
-  background: linear-gradient(148deg, #a9c9dd 0%, #5d7f95 100%);
+  background: linear-gradient(148deg, #e3f0f8 0%, #a6c7db 100%);
 }
 .tone-stone {
-  background: linear-gradient(148deg, #cfc8bf 0%, #8d867d 100%);
+  background: linear-gradient(148deg, #f0edea 0%, #cbc6be 100%);
 }
 .tone-rose {
-  background: linear-gradient(148deg, #e0b3c2 0%, #a06a7e 100%);
+  background: linear-gradient(148deg, #fce6eb 0%, #e2aec0 100%);
 }
 .tone-emerald {
-  background: linear-gradient(148deg, #a8cbb8 0%, #5e8570 100%);
+  background: linear-gradient(148deg, #e4f1e9 0%, #a6ccb7 100%);
 }
 
 .tag {
@@ -852,13 +842,12 @@ const heroStyle = computed(() => {
   z-index: 3;
   padding: 5px 11px;
   border-radius: 999px;
-  background: rgba(10, 10, 14, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
   font-size: 10.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: #f0f0f4;
+  color: var(--text-1);
 }
 
 .meta {
@@ -898,14 +887,14 @@ const heroStyle = computed(() => {
 .card:hover .arrow {
   opacity: 1;
   transform: none;
-  color: var(--accent-2);
+  color: var(--text-1);
 }
 
 .sub {
   margin: 6px 0 0;
   font-size: 12px;
   line-height: 1.5;
-  color: #7f7f8d;
+  color: var(--text-3);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -928,7 +917,7 @@ const heroStyle = computed(() => {
 
 .was {
   font-size: 11.5px;
-  color: #4f4f5b;
+  color: #b0b0b6;
   font-variant-numeric: tabular-nums;
 }
 
@@ -936,20 +925,15 @@ const heroStyle = computed(() => {
   margin-left: auto;
   font-size: 10.5px;
   letter-spacing: 0.06em;
-  color: #45454f;
+  color: #b6b6be;
 }
 
 .skeleton {
   aspect-ratio: 4 / 3.4;
   border-radius: 24px;
-  background: linear-gradient(
-    100deg,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.07) 37%,
-    rgba(255, 255, 255, 0.03) 63%
-  );
+  background: linear-gradient(90deg, #f5f5f7 25%, #eeeef1 37%, #f5f5f7 63%);
   background-size: 400% 100%;
-  animation: shimmer 1.5s ease infinite;
+  animation: shimmer 1.4s ease infinite;
 }
 
 @keyframes shimmer {
@@ -985,14 +969,6 @@ const heroStyle = computed(() => {
   color: var(--text-1);
 }
 
-.outro-title .grad-text {
-  background: linear-gradient(100deg, #cfc8ff, #8f7dff 45%, #3ce8d2);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
 .outro-btn {
   display: inline-flex;
   align-items: center;
@@ -1001,18 +977,18 @@ const heroStyle = computed(() => {
   margin-top: 34px;
   padding: 0 28px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
   color: var(--text-1);
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.3s, background-color 0.3s, transform 0.5s var(--ease-out);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.5s var(--ease-out);
 }
 
 .outro-btn:hover {
-  border-color: var(--brand-border);
-  background: rgba(124, 108, 255, 0.12);
+  border-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.4);
 }
 
 /* ================= 响应式 ================= */

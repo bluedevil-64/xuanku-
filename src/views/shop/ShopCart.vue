@@ -174,7 +174,7 @@ async function submit() {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--hairline);
+  border-top: 0.5px solid var(--hairline);
 }
 
 .item {
@@ -183,7 +183,7 @@ async function submit() {
   align-items: center;
   gap: 20px;
   padding: 22px 0;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 0.5px solid var(--hairline);
 }
 
 .thumb {
@@ -250,7 +250,7 @@ async function submit() {
   height: 34px;
   padding: 0 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.045);
+  background: #f5f5f7;
 }
 
 .qty button {
@@ -267,7 +267,7 @@ async function submit() {
 }
 
 .qty button:hover {
-  background: rgba(255, 255, 255, 0.09);
+  background: #e8e8ed;
 }
 
 .qty span {
@@ -305,7 +305,7 @@ async function submit() {
   top: 96px;
   padding: 26px;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.045);
+  background: #f5f5f7;
 }
 
 .row {
@@ -324,7 +324,7 @@ async function submit() {
 .row.total {
   margin-top: 10px;
   padding-top: 16px;
-  border-top: 1px solid var(--hairline);
+  border-top: 0.5px solid var(--hairline);
   font-size: 15px;
   color: var(--text-1);
 }
@@ -353,7 +353,7 @@ async function submit() {
   padding: 0 14px;
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: #fff;
   color: var(--text-1);
   font-size: 13.5px;
   font-family: inherit;
@@ -375,8 +375,8 @@ async function submit() {
   margin-top: 20px;
   border: none;
   border-radius: 999px;
-  background: #f4f4f7;
-  color: #08080c;
+  background: #1d1d1f;
+  color: #fff;
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
@@ -385,7 +385,7 @@ async function submit() {
 }
 
 .submit:not(:disabled):hover {
-  background: #ffffff;
+  background: #000;
 }
 
 .submit:disabled {
@@ -403,28 +403,28 @@ async function submit() {
 
 /* 缩略图配色（与商品卡一致） */
 .tone-graphite {
-  background: linear-gradient(148deg, #3d3d45 0%, #16161c 74%);
+  background: linear-gradient(148deg, #4a4a4d 0%, #1d1d1f 72%);
 }
 .tone-sand {
-  background: linear-gradient(148deg, #d9c9ae 0%, #9c8a70 100%);
+  background: linear-gradient(148deg, #f2ebe0 0%, #d8cab6 100%);
 }
 .tone-violet {
-  background: linear-gradient(148deg, #b8b0e8 0%, #6b5fa8 100%);
+  background: linear-gradient(148deg, #e6e1fc 0%, #b0a8e9 100%);
 }
 .tone-cream {
-  background: linear-gradient(148deg, #e6d9c0 0%, #b3a184 100%);
+  background: linear-gradient(148deg, #fbf6ec 0%, #e7dbc5 100%);
 }
 .tone-ocean {
-  background: linear-gradient(148deg, #a9c9dd 0%, #5d7f95 100%);
+  background: linear-gradient(148deg, #e3f0f8 0%, #a6c7db 100%);
 }
 .tone-stone {
-  background: linear-gradient(148deg, #cfc8bf 0%, #8d867d 100%);
+  background: linear-gradient(148deg, #f0edea 0%, #cbc6be 100%);
 }
 .tone-rose {
-  background: linear-gradient(148deg, #e0b3c2 0%, #a06a7e 100%);
+  background: linear-gradient(148deg, #fce6eb 0%, #e2aec0 100%);
 }
 .tone-emerald {
-  background: linear-gradient(148deg, #a8cbb8 0%, #5e8570 100%);
+  background: linear-gradient(148deg, #e4f1e9 0%, #a6ccb7 100%);
 }
 
 @media (max-width: 900px) {

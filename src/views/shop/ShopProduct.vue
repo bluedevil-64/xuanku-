@@ -218,8 +218,8 @@ function magnetLeave(e) {
   border-radius: 28px;
   overflow: hidden;
   isolation: isolate;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 50px 100px -50px rgba(0, 0, 0, 1);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.35);
 }
 
 .photo {
@@ -240,14 +240,14 @@ function magnetLeave(e) {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.16), transparent 55%);
+  background: radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.5), transparent 55%);
   mix-blend-mode: soft-light;
 }
 
 .shape {
   display: block;
   background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.28));
-  box-shadow: 0 46px 80px -32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 46px 80px -32px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   animation: float 7s ease-in-out infinite;
 }
 
@@ -283,31 +283,31 @@ function magnetLeave(e) {
 }
 
 .tone-graphite {
-  background: linear-gradient(148deg, #3d3d45 0%, #16161c 74%);
+  background: linear-gradient(148deg, #4a4a4d 0%, #1d1d1f 72%);
 }
 .tone-graphite .shape {
-  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.05));
+  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.04));
 }
 .tone-sand {
-  background: linear-gradient(148deg, #d9c9ae 0%, #9c8a70 100%);
+  background: linear-gradient(148deg, #f2ebe0 0%, #d8cab6 100%);
 }
 .tone-violet {
-  background: linear-gradient(148deg, #b8b0e8 0%, #6b5fa8 100%);
+  background: linear-gradient(148deg, #e6e1fc 0%, #b0a8e9 100%);
 }
 .tone-cream {
-  background: linear-gradient(148deg, #e6d9c0 0%, #b3a184 100%);
+  background: linear-gradient(148deg, #fbf6ec 0%, #e7dbc5 100%);
 }
 .tone-ocean {
-  background: linear-gradient(148deg, #a9c9dd 0%, #5d7f95 100%);
+  background: linear-gradient(148deg, #e3f0f8 0%, #a6c7db 100%);
 }
 .tone-stone {
-  background: linear-gradient(148deg, #cfc8bf 0%, #8d867d 100%);
+  background: linear-gradient(148deg, #f0edea 0%, #cbc6be 100%);
 }
 .tone-rose {
-  background: linear-gradient(148deg, #e0b3c2 0%, #a06a7e 100%);
+  background: linear-gradient(148deg, #fce6eb 0%, #e2aec0 100%);
 }
 .tone-emerald {
-  background: linear-gradient(148deg, #a8cbb8 0%, #5e8570 100%);
+  background: linear-gradient(148deg, #e4f1e9 0%, #a6ccb7 100%);
 }
 
 .tag {
@@ -317,12 +317,12 @@ function magnetLeave(e) {
   z-index: 3;
   padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(10, 10, 14, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.16);
   backdrop-filter: blur(14px);
   font-size: 11px;
   font-weight: 500;
-  color: #f0f0f4;
+  color: var(--text-1);
 }
 
 .promise {
@@ -346,8 +346,8 @@ function magnetLeave(e) {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--accent-2);
-  box-shadow: 0 0 8px 1px rgba(60, 232, 210, 0.6);
+  background: #34c759;
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.14);
 }
 
 /* ---------- 信息 ---------- */
@@ -392,14 +392,14 @@ function magnetLeave(e) {
 }
 
 .star {
-  color: var(--warn);
+  color: var(--text-1);
   font-size: 12px;
 }
 
 .sep {
   width: 1px;
   height: 10px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.12);
 }
 
 .price {
@@ -408,7 +408,7 @@ function magnetLeave(e) {
   gap: 12px;
   margin-top: 26px;
   padding-bottom: 26px;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 0.5px solid var(--hairline);
 }
 
 .now {
@@ -428,8 +428,8 @@ function magnetLeave(e) {
 .save {
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(255, 122, 184, 0.14);
-  color: #ff9ec8;
+  background: var(--brand-soft);
+  color: var(--text-1);
   font-size: 11px;
   letter-spacing: 0.02em;
 }
@@ -456,7 +456,7 @@ function magnetLeave(e) {
   padding: 0 5px;
   border-radius: 999px;
   border: 1px solid var(--border-1);
-  background: rgba(255, 255, 255, 0.035);
+  background: #f5f5f7;
 }
 
 .qty button {
@@ -473,11 +473,11 @@ function magnetLeave(e) {
 }
 
 .qty button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: #e8e8ed;
 }
 
 .qty button:disabled {
-  color: #3f3f49;
+  color: #c7c7cc;
   cursor: default;
 }
 
@@ -504,24 +504,24 @@ function magnetLeave(e) {
 
 .add {
   border: none;
-  background: #f4f4f7;
-  color: #08080c;
-  box-shadow: 0 18px 40px -22px rgba(255, 255, 255, 0.7);
+  background: #1d1d1f;
+  color: #fff;
+  box-shadow: none;
 }
 
 .add:hover {
-  box-shadow: 0 24px 50px -22px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.42);
 }
 
 .now-buy {
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: #fff;
   color: var(--text-1);
 }
 
 .now-buy:hover {
-  border-color: var(--brand-border);
-  background: rgba(124, 108, 255, 0.12);
+  border-color: var(--text-1);
+  background: #fff;
 }
 
 .ask {
@@ -531,8 +531,8 @@ function magnetLeave(e) {
   margin-top: 16px;
   padding: 10px 16px;
   border-radius: 999px;
-  border: 1px dashed rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(0, 0, 0, 0.14);
+  background: #fafafa;
   color: var(--text-2);
   font-size: 12.5px;
   font-family: inherit;
@@ -542,30 +542,30 @@ function magnetLeave(e) {
 
 .ask:hover {
   color: var(--text-1);
-  border-color: var(--brand-border);
-  background: rgba(124, 108, 255, 0.08);
+  border-color: rgba(0, 0, 0, 0.36);
+  background: #fff;
 }
 
 .spark {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent-2);
-  box-shadow: 0 0 0 3px rgba(60, 232, 210, 0.14), 0 0 12px 1px rgba(60, 232, 210, 0.85);
+  background: #34c759;
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.16);
 }
 
 .specs {
   display: grid;
   grid-template-columns: 108px 1fr;
   margin: 44px 0 0;
-  border-top: 1px solid var(--hairline);
+  border-top: 0.5px solid var(--hairline);
 }
 
 .specs dt,
 .specs dd {
   margin: 0;
   padding: 14px 0;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 0.5px solid var(--hairline);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -582,14 +582,9 @@ function magnetLeave(e) {
   margin-top: 26px;
   height: 560px;
   border-radius: 28px;
-  background: linear-gradient(
-    100deg,
-    rgba(255, 255, 255, 0.03) 25%,
-    rgba(255, 255, 255, 0.07) 37%,
-    rgba(255, 255, 255, 0.03) 63%
-  );
+  background: linear-gradient(90deg, #f5f5f7 25%, #eeeef1 37%, #f5f5f7 63%);
   background-size: 400% 100%;
-  animation: shimmer 1.5s ease infinite;
+  animation: shimmer 1.4s ease infinite;
 }
 
 @keyframes shimmer {

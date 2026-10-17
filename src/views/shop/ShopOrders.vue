@@ -176,7 +176,7 @@ async function cancel(order) {
 .order {
   padding: 22px 26px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.045);
+  background: #f5f5f7;
 }
 
 .top {
@@ -185,7 +185,7 @@ async function cancel(order) {
   justify-content: space-between;
   gap: 16px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 0.5px solid var(--hairline);
 }
 
 .no {
@@ -203,7 +203,7 @@ async function cancel(order) {
   font-weight: 500;
   padding: 4px 11px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: #f0f0f3;
   color: var(--text-1);
 }
 
@@ -286,7 +286,7 @@ async function cancel(order) {
   justify-content: space-between;
   gap: 20px;
   padding-top: 16px;
-  border-top: 1px solid var(--hairline);
+  border-top: 0.5px solid var(--hairline);
 }
 
 .meta {
@@ -334,12 +334,12 @@ async function cancel(order) {
 
 .pay {
   border: none;
-  background: #f4f4f7;
-  color: #08080c;
+  background: #1d1d1f;
+  color: #fff;
 }
 
 .pay:hover {
-  background: #ffffff;
+  background: #000;
 }
 
 .ghost:disabled,
@@ -357,7 +357,7 @@ async function cancel(order) {
 .skeleton {
   height: 220px;
   border-radius: 20px;
-  background: linear-gradient(100deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 37%, rgba(255,255,255,0.03) 63%);
+  background: linear-gradient(90deg, #f5f5f7 25%, #eeeef1 37%, #f5f5f7 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
 }
@@ -373,28 +373,28 @@ async function cancel(order) {
 
 /* 缩略图配色 */
 .tone-graphite {
-  background: linear-gradient(148deg, #3d3d45 0%, #16161c 74%);
+  background: linear-gradient(148deg, #4a4a4d 0%, #1d1d1f 72%);
 }
 .tone-sand {
-  background: linear-gradient(148deg, #d9c9ae 0%, #9c8a70 100%);
+  background: linear-gradient(148deg, #f2ebe0 0%, #d8cab6 100%);
 }
 .tone-violet {
-  background: linear-gradient(148deg, #b8b0e8 0%, #6b5fa8 100%);
+  background: linear-gradient(148deg, #e6e1fc 0%, #b0a8e9 100%);
 }
 .tone-cream {
-  background: linear-gradient(148deg, #e6d9c0 0%, #b3a184 100%);
+  background: linear-gradient(148deg, #fbf6ec 0%, #e7dbc5 100%);
 }
 .tone-ocean {
-  background: linear-gradient(148deg, #a9c9dd 0%, #5d7f95 100%);
+  background: linear-gradient(148deg, #e3f0f8 0%, #a6c7db 100%);
 }
 .tone-stone {
-  background: linear-gradient(148deg, #cfc8bf 0%, #8d867d 100%);
+  background: linear-gradient(148deg, #f0edea 0%, #cbc6be 100%);
 }
 .tone-rose {
-  background: linear-gradient(148deg, #e0b3c2 0%, #a06a7e 100%);
+  background: linear-gradient(148deg, #fce6eb 0%, #e2aec0 100%);
 }
 .tone-emerald {
-  background: linear-gradient(148deg, #a8cbb8 0%, #5e8570 100%);
+  background: linear-gradient(148deg, #e4f1e9 0%, #a6ccb7 100%);
 }
 
 @media (max-width: 900px) {

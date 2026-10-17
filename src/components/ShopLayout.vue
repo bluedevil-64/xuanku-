@@ -136,40 +136,39 @@ async function logout() {
   inset: 0;
   z-index: -1;
   overflow: hidden;
-  background: radial-gradient(120% 90% at 50% -20%, #17132b 0%, #0a0a10 42%, #050507 100%);
+  background: var(--bg-canvas);
 }
 
 .aurora {
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.55;
 }
 
 .a1 {
   width: 46vw;
   height: 46vw;
-  top: -14vw;
-  left: 8vw;
-  background: radial-gradient(circle, rgba(124, 108, 255, 0.55), transparent 68%);
+  top: -16vw;
+  left: 6vw;
+  background: radial-gradient(circle, rgba(124, 108, 255, 0.1), transparent 66%);
   animation: drift-a 22s ease-in-out infinite;
 }
 
 .a2 {
   width: 38vw;
   height: 38vw;
-  top: 4vw;
-  right: -6vw;
-  background: radial-gradient(circle, rgba(60, 232, 210, 0.34), transparent 70%);
+  top: 2vw;
+  right: -8vw;
+  background: radial-gradient(circle, rgba(60, 200, 210, 0.09), transparent 68%);
   animation: drift-b 26s ease-in-out infinite;
 }
 
 .a3 {
   width: 34vw;
   height: 34vw;
-  bottom: -16vw;
+  bottom: -18vw;
   left: 34vw;
-  background: radial-gradient(circle, rgba(255, 122, 184, 0.22), transparent 72%);
+  background: radial-gradient(circle, rgba(255, 140, 160, 0.06), transparent 70%);
   animation: drift-a 30s ease-in-out infinite reverse;
 }
 
@@ -177,17 +176,15 @@ async function logout() {
 .mesh {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.022) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(90% 60% at 50% 0%, #000 0%, transparent 78%);
   -webkit-mask-image: radial-gradient(90% 60% at 50% 0%, #000 0%, transparent 78%);
 }
 
 .vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 80% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+  display: none;
 }
 
 /* ---------- 导航 ---------- */
@@ -219,9 +216,9 @@ async function logout() {
 
 .nav.compact .bar {
   height: 52px;
-  background: rgba(10, 10, 15, 0.72);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 50px -30px rgba(0, 0, 0, 0.95);
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.07);
+  box-shadow: inset 0 -0.5px 0 rgba(0, 0, 0, 0.05), 0 18px 40px -30px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(22px) saturate(160%);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
 }
@@ -240,16 +237,20 @@ async function logout() {
   width: 28px;
   height: 28px;
   border-radius: 9px;
-  color: #0a0a0f;
-  background: var(--brand-gradient);
-  box-shadow: 0 6px 18px -8px rgba(124, 108, 255, 0.9);
+  color: #fff;
+  background: var(--brand);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.brand:hover .mark {
+  transform: rotate(-8deg) scale(1.05);
 }
 
 .mark.small {
   width: 22px;
   height: 22px;
   border-radius: 7px;
-  color: #0a0a0f;
+  color: #fff;
 }
 
 .brand-name {
@@ -294,8 +295,7 @@ async function logout() {
   height: 4px;
   border-radius: 50%;
   transform: translateX(-50%);
-  background: var(--brand-gradient);
-  box-shadow: 0 0 10px 1px rgba(124, 108, 255, 0.9);
+  background: var(--text-1);
 }
 
 .badge {
@@ -342,8 +342,8 @@ async function logout() {
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.6);
   color: var(--text-1);
 }
 
@@ -370,27 +370,29 @@ async function logout() {
   height: 36px;
   padding: 0 15px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.6);
   color: var(--text-1);
   font-size: 12.5px;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.25s, background-color 0.25s, transform 0.25s var(--ease-out);
+  transition: border-color 0.25s, background-color 0.25s, transform 0.25s var(--ease-out),
+    box-shadow 0.25s;
 }
 
 .ghost-btn:hover {
-  border-color: var(--brand-border);
-  background: rgba(124, 108, 255, 0.12);
+  border-color: rgba(0, 0, 0, 0.32);
+  background: #fff;
   transform: translateY(-1px);
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.4);
 }
 
 .spark {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent-2);
-  box-shadow: 0 0 0 3px rgba(60, 232, 210, 0.16), 0 0 12px 1px rgba(60, 232, 210, 0.8);
+  background: #34c759;
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.16);
 }
 
 .who {
@@ -430,17 +432,17 @@ async function logout() {
   height: 36px;
   padding: 0 18px;
   border-radius: 999px;
-  background: #f2f2f5;
-  color: #0a0a0f;
+  background: #f5f5f7;
+  color: var(--text-1);
   font-size: 12.5px;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.25s var(--ease-out), box-shadow 0.25s;
+  transition: background-color 0.25s, transform 0.25s var(--ease-out);
 }
 
 .signin:hover {
+  background: #ececf0;
   transform: translateY(-1px);
-  box-shadow: 0 12px 26px -12px rgba(255, 255, 255, 0.5);
 }
 
 /* ---------- 主体 / 页脚 ---------- */
@@ -483,14 +485,14 @@ async function logout() {
   margin-top: 30px;
   font-size: 11.5px;
   letter-spacing: 0.04em;
-  color: #4c4c56;
+  color: #b3b3bc;
 }
 
 .dot {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: #3a3a44;
+  background: #d8d8de;
 }
 
 @media (max-width: 860px) {

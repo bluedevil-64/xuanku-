@@ -110,8 +110,8 @@ async function doRegister() {
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background: radial-gradient(70% 50% at 50% -10%, rgba(124, 108, 255, 0.18), transparent 62%),
-    radial-gradient(50% 42% at 88% 88%, rgba(60, 232, 210, 0.1), transparent 66%), var(--bg-canvas);
+  background: radial-gradient(70% 50% at 50% -10%, rgba(124, 108, 255, 0.07), transparent 62%),
+    radial-gradient(50% 42% at 88% 88%, rgba(52, 199, 89, 0.05), transparent 66%), var(--bg-canvas);
   box-sizing: border-box;
 }
 
@@ -160,7 +160,7 @@ h1 {
   padding: 3px;
   margin-bottom: 26px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.045);
+  background: #f5f5f7;
 }
 
 .tabs button {
@@ -179,9 +179,9 @@ h1 {
 }
 
 .tabs button.on {
-  background: rgba(255, 255, 255, 0.05);
+  background: #fff;
   color: var(--text-1);
-  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 form {
@@ -195,7 +195,7 @@ input {
   padding: 0 16px;
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.045);
+  background: #f5f5f7;
   color: var(--text-1);
   font-size: 14.5px;
   font-family: inherit;
@@ -208,7 +208,7 @@ input::placeholder {
 }
 
 input:focus {
-  background: rgba(255, 255, 255, 0.05);
+  background: #fff;
   box-shadow: inset 0 0 0 1px #1d1d1f;
 }
 
@@ -217,8 +217,8 @@ input:focus {
   margin-top: 10px;
   border: none;
   border-radius: 999px;
-  background: #f4f4f7;
-  color: #08080c;
+  background: #1d1d1f;
+  color: #fff;
   font-size: 15px;
   font-weight: 500;
   font-family: inherit;
@@ -227,7 +227,7 @@ input:focus {
 }
 
 .submit:not(:disabled):hover {
-  background: #ffffff;
+  background: #000;
 }
 
 .submit:disabled {
