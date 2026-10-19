@@ -1,9 +1,10 @@
 <script setup>
-import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authApi } from '../api'
 import { useUserStore } from '../stores/user'
 import { useCartStore } from '../stores/cart'
+import { initSmoothScroll } from '../utils/smoothScroll'
 import AiDock from './AiDock.vue'
 import CursorFx from './CursorFx.vue'
 
@@ -32,7 +33,24 @@ function toTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+/* ---------- 迷你购物车浮层：加购后右上下滑，3.2s 自动收起 ---------- */
+const flyout = ref(false)
+let flyoutTimer = 0
+const lastAdded = computed(() => cart.items[cart.items.length - 1] || null)
+
+watch(
+  () => cart.count,
+  (n, o) => {
+    if (!n || n <= (o || 0)) return
+    flyout.value = true
+    clearTimeout(flyoutTimer)
+    flyoutTimer = setTimeout(() => (flyout.value = false), 3200)
+  },
+)
+onBeforeUnmount(() => clearTimeout(flyoutTimer))
+
 onMounted(() => {
+  initSmoothScroll()
   onScroll()
   window.addEventListener('scroll', onScroll, { passive: true })
 })
@@ -62,6 +80,32 @@ async function logout() {
 
     <!-- 顶部滚动进度线 -->
     <div class="progress" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true"></div>
+
+    <!-- 迷你购物车浮层 -->
+    <transition name="fly">
+      <aside v-if="flyout && lastAdded" class="mini-cart" aria-live="polite">
+        <p class="mc-title">Added to cart</p>
+        <div class="mc-item">
+          <img
+            v-if="lastAdded.image"
+            :src="lastAdded.image"
+            :alt="lastAdded.name"
+            class="mc-img"
+          />
+          <span v-else class="mc-img mc-fallback">{{ (lastAdded.name || '?')[0] }}</span>
+          <div class="mc-info">
+            <span class="mc-name">{{ lastAdded.name }}</span>
+            <span class="mc-meta">Qty {{ lastAdded.quantity }} · ¥{{ lastAdded.price }}</span>
+          </div>
+        </div>
+        <router-link to="/shop/cart" class="mc-link" @click="flyout = false">
+          View cart ({{ cart.count }})
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </router-link>
+      </aside>
+    </transition>
 
     <!-- 返回顶部 -->
     <button class="to-top" :class="{ on: showTop }" aria-label="Back to top" @click="toTop">
@@ -141,7 +185,9 @@ async function logout() {
           <span>Vue 3 · Vite · Static hosting</span>
         </div>
       </div>
-    </footer>
+      <!-- 页脚：品牌大字贴底 -->
+    <p class="big-word" aria-hidden="true">XUANKU</p>
+  </footer>
 
     <AiDock v-model:open="chatOpen" />
     <CursorFx />
@@ -316,6 +362,22 @@ async function logout() {
   color: var(--text-2);
   text-decoration: none;
   transition: color 0.22s, background-color 0.22s;
+}
+
+/* 下划线从左滑出（Aesop 式反馈） */
+.link::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 100%;
+  bottom: 4px;
+  height: 1px;
+  background: var(--text-1);
+  transition: right 0.45s var(--ease-out);
+}
+
+.link:hover::before {
+  right: 14px;
 }
 
 .link:hover {
@@ -574,6 +636,107 @@ async function logout() {
   color: #fff;
 }
 
+/* ---------- 迷你购物车浮层 ---------- */
+.mini-cart {
+  position: fixed;
+  top: 78px;
+  right: 24px;
+  z-index: 150;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: 18px 18px 14px;
+  border: 1px solid var(--border-1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 32px 70px -30px rgba(0, 0, 0, 0.4);
+}
+
+.mc-title {
+  margin: 0 0 12px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.mc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mc-img {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--border-1);
+}
+
+.mc-fallback {
+  display: grid;
+  place-items: center;
+  background: var(--fill-1);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.mc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mc-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mc-meta {
+  font-size: 11.5px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-1);
+  text-decoration: none;
+  border-bottom: 1px solid var(--text-1);
+  padding-bottom: 1px;
+  transition: opacity 0.2s;
+}
+
+.mc-link:hover {
+  opacity: 0.65;
+}
+
+.fly-enter-active,
+.fly-leave-active {
+  transition: opacity 0.3s, transform 0.4s var(--ease-out);
+}
+
+.fly-enter-from,
+.fly-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+}
+
 .foot-meta {
   display: flex;
   align-items: center;
@@ -589,6 +752,20 @@ async function logout() {
   height: 3px;
   border-radius: 50%;
   background: #d8d8de;
+}
+
+/* 巨型品牌字贴底：描边空心，一半裁出画面 */
+.big-word {
+  margin: 72px auto -0.24em;
+  text-align: center;
+  font-size: clamp(90px, 15.5vw, 250px);
+  font-weight: 600;
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.13);
+  user-select: none;
+  pointer-events: none;
 }
 
 @media (max-width: 860px) {

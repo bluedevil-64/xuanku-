@@ -72,4 +72,10 @@ router.beforeEach((to) => {
   return true
 })
 
+router.beforeResolve((to, from, next) => {
+  // View Transition API：页面切换 cross-fade（渐进增强，不支持则直接跳转）
+  if (!document.startViewTransition || to.path === from.path) return next()
+  document.startViewTransition(() => next())
+})
+
 export default router

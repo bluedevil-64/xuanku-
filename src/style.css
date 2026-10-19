@@ -162,6 +162,13 @@ a {
   border-radius: 4px;
 }
 
+/* 路由 View Transition：快速 cross-fade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* ===== 自定义光标（CursorFx 启用时隐藏原生光标，输入类保留） ===== */
 html.has-cursor-fx,
 html.has-cursor-fx * {
