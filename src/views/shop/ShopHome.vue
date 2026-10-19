@@ -124,6 +124,16 @@ function quickAdd(p) {
   ElMessage.success(`Added to cart · ${p.name}`)
 }
 
+/** 前端本地搜索：静态站友好，不依赖接口 */
+const search = ref('')
+const filtered = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  if (!q) return products.value
+  return products.value.filter((p) =>
+    [p.name, p.subtitle, p.category].filter(Boolean).some((t) => String(t).toLowerCase().includes(q)),
+  )
+})
+
 /** 图片解码完成后再淡入，避免黑块闪一下 */
 const loaded = reactive(new Set())
 function onImgLoad(id) {
@@ -278,9 +288,21 @@ const heroStyle = computed(() => {
     <section id="catalog" class="catalog">
       <header class="cat-head">
         <div>
-          <p class="eyebrow">Catalog</p>
+          <p class="eyebrow">01 · Catalog</p>
           <h2 class="cat-title">All objects</h2>
         </div>
+        <label class="search">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" stroke-linecap="round" />
+          </svg>
+          <input v-model="search" placeholder="Search objects…" />
+          <button v-if="search" class="clear" aria-label="Clear search" @click="search = ''">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+            </svg>
+          </button>
+        </label>
       </header>
 
       <div class="filters">
@@ -313,7 +335,7 @@ const heroStyle = computed(() => {
 
       <div v-else class="grid" :key="category + sort">
         <router-link
-          v-for="(p, i) in products"
+          v-for="(p, i) in filtered"
           :key="p.id"
           :to="`/shop/p/${p.id}`"
           class="card"
@@ -365,11 +387,14 @@ const heroStyle = computed(() => {
         </router-link>
       </div>
 
-      <p v-if="!loading && !products.length" class="empty">Nothing in this category yet — try another</p>
+      <p v-if="!loading && !filtered.length" class="empty">
+        {{ search ? `No matches for “${search}”` : 'Nothing in this category yet — try another' }}
+      </p>
     </section>
 
     <!-- ============ 尾部 CTA ============ -->
     <section class="outro">
+      <p class="eyebrow">02 · Concierge</p>
       <h2 class="outro-title">
         Let the AI pick<br />
         <span class="grad-text">the right one</span>
@@ -782,6 +807,56 @@ const heroStyle = computed(() => {
   margin-bottom: 34px;
 }
 
+/* 搜索：下划线极简输入 */
+.search {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  width: 250px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--border-2);
+  color: var(--text-3);
+  transition: border-color 0.25s;
+}
+
+.search:focus-within {
+  border-color: var(--text-1);
+  color: var(--text-1);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+}
+
+.search input::placeholder {
+  color: var(--text-3);
+}
+
+.search .clear {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: var(--fill-1);
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.search .clear:hover {
+  background: #e8e8ed;
+  color: var(--text-1);
+}
+
 .cat-title {
   margin: 12px 0 0;
   font-size: clamp(30px, 4vw, 44px);
@@ -1135,6 +1210,14 @@ const heroStyle = computed(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* Aesop/COS 式：hover 时名字下划线从左滑出 */
+  background: linear-gradient(currentColor, currentColor) no-repeat left bottom / 0 1px;
+  transition: background-size 0.45s var(--ease-out);
+  padding-bottom: 2px;
+}
+
+.card:hover .meta h3 {
+  background-size: 100% 1px;
 }
 
 .arrow {
@@ -1205,7 +1288,7 @@ const heroStyle = computed(() => {
 }
 
 .outro-title {
-  margin: 0;
+  margin: 20px 0 0;
   font-size: clamp(34px, 5.4vw, 64px);
   font-weight: 600;
   line-height: 1.1;

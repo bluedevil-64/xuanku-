@@ -3,7 +3,7 @@ import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { shopApi } from '../../api'
-import { demoProduct } from '../../api/demo'
+import { demoProduct, demoProducts } from '../../api/demo'
 import { useCartStore } from '../../stores/cart'
 
 const route = useRoute()
@@ -14,6 +14,24 @@ const openChat = inject('openChat', () => {})
 const product = ref(null)
 const qty = ref(1)
 const loading = ref(true)
+const related = ref([])
+
+/** 相关推荐：同分类优先，不足 3 件用其他分类热销补齐 */
+async function loadRelated(current) {
+  let list = []
+  try {
+    const page = await shopApi.products({ size: 60 }, true)
+    list = page.records || []
+  } catch {
+    const page = await demoProducts({ size: 60 })
+    list = page.records || []
+  }
+  const others = list.filter((x) => String(x.id) !== String(current.id))
+  related.value = [
+    ...others.filter((x) => x.category === current.category),
+    ...others.filter((x) => x.category !== current.category),
+  ].slice(0, 3)
+}
 
 const specList = computed(() =>
   (product.value?.specs || '')
@@ -37,6 +55,7 @@ async function load() {
   } finally {
     qty.value = 1
     loading.value = false
+    if (product.value) loadRelated(product.value)
   }
 }
 
@@ -168,6 +187,20 @@ function magnetLeave(e) {
             <dd>{{ s.v }}</dd>
           </template>
         </dl>
+
+        <div v-if="related.length" class="related">
+          <p class="eyebrow">Keep looking</p>
+          <div class="rel-grid">
+            <router-link v-for="r in related" :key="r.id" :to="`/shop/p/${r.id}`" class="rel-card">
+              <span class="rel-visual" :class="[`tone-${r.tone}`, `s${shapeOf(r.id)}`]">
+                <img v-if="r.image" :src="r.image" :alt="r.name" loading="lazy" />
+                <span v-else class="shape"></span>
+              </span>
+              <span class="rel-name">{{ r.name }}</span>
+              <span class="rel-price">¥{{ money(r.price) }}</span>
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -576,6 +609,87 @@ function magnetLeave(e) {
 
 .specs dd {
   color: var(--text-1);
+}
+
+/* ---------- 相关推荐 ---------- */
+.related {
+  margin-top: 52px;
+}
+
+.related .eyebrow {
+  margin: 0 0 18px;
+}
+
+.rel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.rel-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: #fff;
+  padding: 8px 8px 14px;
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s, border-color 0.3s;
+}
+
+.rel-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.35);
+}
+
+.rel-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.rel-visual img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease-out);
+}
+
+.rel-card:hover .rel-visual img {
+  transform: scale(1.05);
+}
+
+.rel-visual .shape {
+  display: block;
+  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.28));
+  box-shadow: 0 20px 36px -18px rgba(0, 0, 0, 0.3);
+  animation: float 7s ease-in-out infinite;
+}
+
+.rel-name {
+  padding: 0 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rel-price {
+  padding: 5px 6px 0;
+  font-size: 12px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }
 
 .skeleton {

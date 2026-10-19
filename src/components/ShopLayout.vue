@@ -14,6 +14,7 @@ const cart = useCartStore()
 const chatOpen = ref(false)
 const scrolled = ref(false)
 const progress = ref(0)
+const showTop = ref(false)
 
 provide('openChat', () => {
   chatOpen.value = true
@@ -21,9 +22,14 @@ provide('openChat', () => {
 
 function onScroll() {
   scrolled.value = window.scrollY > 24
+  showTop.value = window.scrollY > 900
   const doc = document.documentElement
   const max = doc.scrollHeight - window.innerHeight
   progress.value = max > 0 ? Math.min(1, window.scrollY / max) : 0
+}
+
+function toTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 onMounted(() => {
@@ -56,6 +62,13 @@ async function logout() {
 
     <!-- 顶部滚动进度线 -->
     <div class="progress" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true"></div>
+
+    <!-- 返回顶部 -->
+    <button class="to-top" :class="{ on: showTop }" aria-label="Back to top" @click="toTop">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
 
     <header class="nav" :class="{ compact: scrolled }">
       <div class="bar">
@@ -117,6 +130,11 @@ async function logout() {
           <span>XUANKU</span>
         </div>
         <p class="tagline">A front-end-only e-commerce visual experiment.</p>
+
+        <blockquote class="quote">
+          “The details are not the details. They make the design.”
+          <cite>— Charles Eames</cite>
+        </blockquote>
         <div class="foot-meta">
           <span>© 2026 XUANKU</span>
           <span class="dot"></span>
@@ -499,6 +517,61 @@ async function logout() {
   margin: 14px 0 0;
   font-size: 13px;
   color: var(--text-3);
+}
+
+/* 页脚引用语：Aesop 式的文化点缀 */
+.quote {
+  margin: 40px 0 0;
+  max-width: 460px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.quote cite {
+  display: block;
+  margin-top: 10px;
+  font-family: inherit;
+  font-style: normal;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+
+/* 返回顶部：左下角，滚过一屏浮现 */
+.to-top {
+  position: fixed;
+  left: 26px;
+  bottom: 26px;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px);
+  color: var(--text-1);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  box-shadow: 0 14px 32px -18px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.35s, transform 0.45s var(--ease-out), background-color 0.2s;
+}
+
+.to-top.on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.to-top:hover {
+  background: var(--text-1);
+  color: #fff;
 }
 
 .foot-meta {
