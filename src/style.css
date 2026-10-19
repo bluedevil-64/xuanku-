@@ -667,12 +667,6 @@ html.has-cursor-fx textarea {
   animation: hero-in 1.05s var(--ease-out) both;
 }
 
-/* 磁吸按钮 */
-.magnet {
-  transition: transform 0.5s var(--ease-out), background-color 0.2s;
-  will-change: transform;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
@@ -681,9 +675,6 @@ html.has-cursor-fx textarea {
   }
   .hero-in {
     animation: none;
-  }
-  .magnet {
-    transition: none;
   }
   .aurora {
     animation: none !important;

@@ -140,50 +140,12 @@ function onImgLoad(id) {
   loaded.add(id)
 }
 
-/** 磁吸：光标在按钮内时轻微跟随，离开回弹 */
-function magnetMove(e) {
-  const el = e.currentTarget
-  const r = el.getBoundingClientRect()
-  const x = ((e.clientX - r.left - r.width / 2) * 0.14).toFixed(1)
-  const y = ((e.clientY - r.top - r.height / 2) * 0.22).toFixed(1)
-  el.style.transition = 'none'
-  el.style.transform = `translate(${x}px, ${y}px)`
-}
-
-function magnetLeave(e) {
-  const el = e.currentTarget
-  el.style.transition = ''
-  el.style.transform = ''
-}
-
-/** 首屏聚光：一道极淡的暗晕跟随鼠标，像纸面被手电压住 */
-const heroEl = ref(null)
-
-function heroSpot(e) {
-  const el = heroEl.value
-  if (!el) return
-  const r = el.getBoundingClientRect()
-  el.style.setProperty('--hx', `${e.clientX - r.left}px`)
-  el.style.setProperty('--hy', `${e.clientY - r.top}px`)
-}
-
-/** 卡片光斑 + 轻微 3D 倾斜（作用在内层，避免与 reveal 的 transform 打架） */
+/** 卡片光斑：仅更新 CSS 变量，动效交给 CSS（Apple 式：不用 tilt / rotate） */
 function cardMove(e) {
   const el = e.currentTarget
   const r = el.getBoundingClientRect()
-  const px = e.clientX - r.left
-  const py = e.clientY - r.top
-  el.style.setProperty('--mx', `${px}px`)
-  el.style.setProperty('--my', `${py}px`)
-  if (window.matchMedia('(pointer: coarse)').matches) return
-  const rx = ((py / r.height - 0.5) * -3.4).toFixed(2)
-  const ry = ((px / r.width - 0.5) * 3.4).toFixed(2)
-  el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`
-}
-
-function cardLeave(e) {
-  const el = e.currentTarget
-  el.style.transform = ''
+  el.style.setProperty('--mx', `${e.clientX - r.left}px`)
+  el.style.setProperty('--my', `${e.clientY - r.top}px`)
 }
 
 /** 用 id 各位数字之和决定抽象图形，避免相邻 id 形状重复 */
@@ -206,13 +168,10 @@ const heroStyle = computed(() => {
 <template>
   <div class="home">
     <!-- ============ HERO ============ -->
-    <section ref="heroEl" class="hero" @mousemove="heroSpot">
+    <section class="hero">
       <WavesBg class="hero-waves" />
-      <div class="hero-glow" aria-hidden="true"></div>
-      <div class="hero-spot" aria-hidden="true"></div>
-
-      <div class="hero-inner" :style="heroStyle">
-        <p class="eyebrow hero-in" v-scramble>Selected Objects · 2026</p>
+ <div class="hero-inner" :style="heroStyle">
+        <p class="eyebrow hero-in">Selected Objects · 2026</p>
 
         <h1 class="title">
           <span class="line">
@@ -228,22 +187,11 @@ const heroStyle = computed(() => {
         </h1>
 
         <div class="cta hero-in">
-          <a
-            class="primary magnet"
-            href="#catalog"
-            @mousemove="magnetMove"
-            @mouseleave="magnetLeave"
-          >
-            <span class="ring" aria-hidden="true">
-              <span class="beam"></span>
-              <span class="beam b2"></span>
-            </span>
-            <span class="core">
-              <span class="label">Start browsing</span>
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </span>
+          <a class="primary" href="#catalog">
+            <span class="label">Start browsing</span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </a>
           <button class="ghost" @click="openChat">
             <span class="spark"></span>
@@ -341,7 +289,7 @@ const heroStyle = computed(() => {
           class="card"
           v-reveal="{ delay: (i % 4) * 70 }"
         >
-          <div class="card-inner" @mousemove="cardMove" @mouseleave="cardLeave">
+          <div class="card-inner" @mousemove="cardMove">
             <div class="visual" :class="[`tone-${p.tone}`, `s${shapeOf(p.id)}`]">
               <img
                 v-if="p.image"
@@ -364,7 +312,6 @@ const heroStyle = computed(() => {
                 <path d="M12 5v14M5 12h14" stroke-linecap="round" />
               </svg>
             </button>
-            <span class="sheen" aria-hidden="true"></span>
             </div>
 
             <div class="meta">
@@ -399,7 +346,7 @@ const heroStyle = computed(() => {
         Let the AI pick<br />
         <span class="grad-text">the right one</span>
       </h2>
-      <button class="outro-btn magnet" @mousemove="magnetMove" @mouseleave="magnetLeave" @click="openChat">
+      <button class="outro-btn" @click="openChat">
         Chat with the concierge
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h13M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
@@ -434,35 +381,8 @@ const heroStyle = computed(() => {
   z-index: 0;
 }
 
-.hero-glow {
-  position: absolute;
-  top: 8%;
-  left: 50%;
-  width: min(900px, 88vw);
-  height: min(900px, 88vw);
-  transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(124, 108, 255, 0.09), transparent 62%);
-  filter: blur(30px);
-  pointer-events: none;
-}
-
 /* 鼠标聚光：极淡暗晕跟随，白纸被轻轻压出一块阴影 */
-.hero-spot {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.6s;
-  background: radial-gradient(
-    420px circle at var(--hx, 50%) var(--hy, 40%),
-    rgba(0, 0, 0, 0.045),
-    transparent 70%
-  );
-}
 
-.hero:hover .hero-spot {
-  opacity: 1;
-}
 
 .hero-inner {
   position: relative;
@@ -504,10 +424,6 @@ const heroStyle = computed(() => {
   transition: transform 0.4s var(--ease-out);
 }
 
-.title .ch:hover {
-  transform: translateY(-0.12em) rotate(-2deg);
-}
-
 /* 渐变行整体入场（background-clip:text 不能拆字，拆了裁剪会失效） */
 .title .ch-line {
   display: block;
@@ -538,108 +454,24 @@ const heroStyle = computed(() => {
 }
 
 .primary {
-  position: relative;
-  display: inline-flex;
-  height: 50px;
-  padding: 2px;
-  border-radius: 999px;
-  background: #1d1d1f;
-  text-decoration: none;
-  transition: transform 0.5s var(--ease-out);
-}
-
-/* StarBorder：光点只在边缘 2px 环上绕行，中心被 .core 盖住 */
-.primary .ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.primary .beam {
-  position: absolute;
-  inset: -150%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 332deg,
-    rgba(255, 255, 255, 0.95) 352deg,
-    transparent 360deg
-  );
-  animation: beam-spin 4.2s linear infinite;
-}
-
-.primary .beam.b2 {
-  background: conic-gradient(
-    from 180deg,
-    transparent 0deg 344deg,
-    rgba(255, 255, 255, 0.5) 356deg,
-    transparent 360deg
-  );
-  animation-duration: 6.6s;
-  animation-direction: reverse;
-}
-
-.primary .core {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  height: 100%;
-  padding: 0 26px;
+  height: 50px;
+  padding: 0 28px;
   border-radius: 999px;
   background: #1d1d1f;
   color: #fff;
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.2s;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
 }
 
-/* ShinyText：按钮文字上一道高光周期扫过（React Bits 同款思路） */
-.primary .label {
-  background: linear-gradient(
-    110deg,
-    #fff 0%,
-    #fff 44%,
-    rgba(255, 255, 255, 0.4) 50%,
-    #fff 56%,
-    #fff 100%
-  );
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: shiny 3.4s linear infinite;
-}
-
-@keyframes shiny {
-  from {
-    background-position: 120% 0;
-  }
-  to {
-    background-position: -120% 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .primary .label {
-    animation: none;
-    background: none;
-    color: #fff;
-    -webkit-text-fill-color: currentColor;
-  }
-}
-
-.primary:hover .core {
+.primary:hover {
   background: #000;
-}
-
-@keyframes beam-spin {
-  to {
-    transform: rotate(1turn);
-  }
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -20px rgba(0, 0, 0, 0.45);
 }
 
 .ghost {
@@ -773,7 +605,7 @@ const heroStyle = computed(() => {
 .track {
   display: flex;
   width: max-content;
-  animation: slide 42s linear infinite;
+  animation: slide 90s linear infinite;
 }
 
 .seq {
@@ -1009,25 +841,6 @@ const heroStyle = computed(() => {
 }
 
 /* 悬停时一道高光斜扫过图面 */
-.sheen {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(
-    112deg,
-    transparent 32%,
-    rgba(255, 255, 255, 0.4) 46%,
-    rgba(255, 255, 255, 0.1) 54%,
-    transparent 66%
-  );
-  transform: translateX(-120%);
-  transition: transform 0.85s var(--ease-out);
-}
-
-.card:hover .sheen {
-  transform: translateX(120%);
-}
 
 .shape {
   display: block;
@@ -1365,9 +1178,6 @@ const heroStyle = computed(() => {
   }
   .bead {
     animation: none;
-  }
-  .sheen {
-    display: none;
   }
 }
 </style>

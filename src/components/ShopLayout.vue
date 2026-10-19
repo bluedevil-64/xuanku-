@@ -6,7 +6,6 @@ import { useUserStore } from '../stores/user'
 import { useCartStore } from '../stores/cart'
 import { initSmoothScroll } from '../utils/smoothScroll'
 import AiDock from './AiDock.vue'
-import CursorFx from './CursorFx.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -71,9 +70,7 @@ async function logout() {
   <div class="shell">
     <!-- 背景：极光 + 细网格，固定不随内容滚动 -->
     <div class="backdrop" aria-hidden="true">
-      <span class="aurora a1"></span>
-      <span class="aurora a2"></span>
-      <span class="aurora a3"></span>
+
       <div class="mesh"></div>
       <div class="vignette"></div>
     </div>
@@ -190,7 +187,6 @@ async function logout() {
   </footer>
 
     <AiDock v-model:open="chatOpen" />
-    <CursorFx />
   </div>
 </template>
 
@@ -210,39 +206,6 @@ async function logout() {
   z-index: -1;
   overflow: hidden;
   background: var(--bg-canvas);
-}
-
-.aurora {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-}
-
-.a1 {
-  width: 46vw;
-  height: 46vw;
-  top: -16vw;
-  left: 6vw;
-  background: radial-gradient(circle, rgba(124, 108, 255, 0.1), transparent 66%);
-  animation: drift-a 22s ease-in-out infinite;
-}
-
-.a2 {
-  width: 38vw;
-  height: 38vw;
-  top: 2vw;
-  right: -8vw;
-  background: radial-gradient(circle, rgba(60, 200, 210, 0.09), transparent 68%);
-  animation: drift-b 26s ease-in-out infinite;
-}
-
-.a3 {
-  width: 34vw;
-  height: 34vw;
-  bottom: -18vw;
-  left: 34vw;
-  background: radial-gradient(circle, rgba(255, 140, 160, 0.06), transparent 70%);
-  animation: drift-a 30s ease-in-out infinite reverse;
 }
 
 /* 细网格：只在中上部淡淡透出 */

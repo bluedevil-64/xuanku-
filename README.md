@@ -1,25 +1,24 @@
-# XUANKU · 把好设计带回家里
+# XUANKU · Good design comes home
 
-一个**纯前端**的高规格电商视觉实验。白画布、黑灰文字的极简基线之上，用动效做加法：逐行模糊入场、滚动视差、黑灰光泽标题、商品卡 3D 倾斜与鼠标光斑、扫光、滚动字幕、极淡彩光球呼吸背景。
+A **front-end-only** e-commerce visual experiment. White canvas, black-and-grey type, and one consistent motion language — inspired by Apple's design philosophy: restrained, physical, content-first.
 
-不依赖任何后端：商品数据打包在 `public/demo/products.json`，AI 导购是本地规则 + 打字机，离线也能完整走完浏览链路。
+No backend required: product data ships in `public/demo/products.json`, and the AI concierge runs on local intent matching with a typewriter effect — fully usable offline.
 
 ![首屏](docs/screenshots/hero.png)
 
-## 视觉与交互
+## Motion language (v3 · Apple-inspired)
 
-| 层 | 做法 |
+One easing curve (`cubic-bezier(0.22,1,0.36,1)`), three durations (0.2s hover / 0.45s transition / 0.9s entrance), and only translation, opacity, blur and subtle scale. No rotation, no tilt, no bounces, no gimmicks.
+
+| Layer | Motion |
 | --- | --- |
-| 底色 | 纯白画布 + 全局极淡噪点（SVG 湍流）+ 三团极淡彩色光球缓慢漂移 |
-| 导航 | 未滚动时全透明，滚动 24px 后收成 52px 白色玻璃胶囊 |
-| 首屏 | `clamp(46px, 8.6vw, 118px)` 巨型标题逐行模糊入场；第二行黑灰光泽渐变缓慢流动；随滚动 0.18 倍视差并淡出 |
-| 商品卡 | 白卡 + 内层 3D 倾斜（±3.4°）+ 跟随鼠标的淡灰光斑 + 一道白色扫光 |
-| 网格 | IntersectionObserver 按列 70ms 错峰入场，`prefers-reduced-motion` 全量降级 |
-| 光标 | 全局自定义光标：小点即时跟随 + 圆环滞后追踪，`mix-blend-mode: difference` 反色（白底显黑、深图显白），触屏自动禁用 |
-| 首屏 | 标题第一行逐字 blur 入场；eyebrow 解码文字（字符乱序逐帧解锁）；数据条数字从 0 滚动到位；一道极淡暗晕跟随鼠标；背景 16 行黑白细线波浪缓慢漂移（Canvas，离开视口自动暂停） |
-| CTA | StarBorder 流光边框：两道光点沿按钮边缘 2px 环反向绕行 |
-| 商品图 | 滚动驱动视差（CSS `animation-timeline: view()`，零 JS 渐进增强） |
-| 全局 | 顶部 2px 滚动进度线；AI 面板打开时深色玻璃浮层 |
+| Scrolling | Inertial smooth scroll (Lenis-style, zero-dependency) + top progress line + View Transition route fades |
+| Entrance | Per-character blur-rise headline, staggered grid reveal, count-up stats |
+| Ambience | Slow drifting hairline waves (Canvas), paused off-screen |
+| Commerce | Quick-add button, mini-cart flyout, cart badge pop, search underline |
+| Feedback | Underline slide-in links, footer brand monolith, Eames quote |
+
+Built with Vue 3 + Vite + Pinia; Element Plus included **on-demand** (only `ElMessage` styles) — main bundle 204 kB / gzip 77 kB.
 | AI 导购 | 右下黑色胶囊按钮 → 深色玻璃面板（白底上唯一的深色层次），本地意图匹配（预算/品类/新品/性价比）+ 逐字打字机 |
 
 ![商品目录](docs/screenshots/catalog.png)
